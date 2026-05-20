@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css?family=Rambla:400i');
+
+a {
+    color: #ffffff;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+}
+body {
+    background: #000000;
+    color: #fff;
+}
+
+.tv-area { 
+    margin-top: 20px; 
+    margin-bottom: 20px;
+}
+
+/* টিভি সাইডবার চ্যানেল লিস্ট গ্রিড */
+.channel-list { 
+    padding-left: 15px; 
+    height: 75vh; 
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    -webkit-overflow-scrolling: touch; 
+    scroll-behavior: smooth; 
+}
+
+.thumbnail-slider { 
+    margin: 0; 
+    padding: 0;  
+}
+
+.thumbnail-slider li { 
+    list-style: none; 
+    margin-bottom: 12px; 
+}
+
+.thumbnail-slider li a {
+    display: block;
+    border: 3px solid #1a1a1a;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
+.thumbnail-slider li img { 
+    width: 100%; 
+    height: auto !important; 
+    display: block;
+}
+
+/* স্ক্রোলবার ডিজাইন - ডার্ক টিভি থিম */
+.channel-list::-webkit-scrollbar {
+    width: 6px;
+    background-color: #000;
+}
+.channel-list::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #222;
+}
+
+/* রেস্পন্সিভ লেআউট টিভির জন্য ফিক্সড */
+@media (max-width: 990px) {
+    .channel-list { 
+        padding: 10px 15px; 
+        height: auto !important; 
+        overflow-y: hidden; 
+        overflow-x: auto; 
+        white-space: nowrap;
+    }
+    .thumbnail-slider li { 
+        display: inline-block; 
+        margin: 0 10px 0 0; 
+    }
+    .thumbnail-slider li a { 
+        width: 120px; 
+    }
+}

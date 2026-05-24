@@ -1,99 +1,19 @@
 @import url('https://fonts.googleapis.com/css?family=Rambla:400i');
 
-/* গ্লোবাল এবং বডি রিসেট */
 body {
-    background: #08080a;
+    background: #121212;
     color: #fff;
-    margin: 0;
-    padding: 0;
-    font-family: 'Rambla', sans-serif;
-    overflow-x: hidden;
 }
 
-a {
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.2s ease-in-out;
-}
-
+/* টিভি এরিয়া লেআউট */
 .tv-area { 
     margin-top: 30px; 
 }
 
-/* প্লেয়ার রেসপনসিভনেস */
-.tv-view .embed-responsive {
-    border: 2px solid #1a1a24;
-    border-radius: 12px;
-    background: #000;
-    overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
-}
-
-iframe {
-    border: 0 !important;
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-/* ক্যাটাগরি কন্টেইনার স্টাইল (গ্লাস-মরফিজম লুক) */
-.category-wrapper {
-    margin-top: 15px;
-    margin-bottom: 15px;
-    background: rgba(18, 18, 24, 0.7);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    padding: 10px 15px;
-}
-
-.category-list-buttons {
-    display: flex;
-    gap: 12px;
-    overflow-x: auto;
-    white-space: nowrap;
-    padding-bottom: 4px;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* স্ক্রোলবার হাইড কিন্তু মোবাইল/টিভি স্ক্রোল চালু */
-.category-list-buttons::-webkit-scrollbar {
-    height: 3px;
-}
-.category-list-buttons::-webkit-scrollbar-thumb {
-    background: rgba(214, 41, 41, 0.3);
-    border-radius: 10px;
-}
-
-/* নিয়ন রেডি ক্যাটাগরি বাটন */
-.category-btn {
-    background: #16161f;
-    color: #9999a3;
-    border: 1px solid #262636;
-    padding: 6px 18px;
-    font-size: 14px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.25s ease-in-out;
-}
-
-.category-btn:hover {
-    color: #fff;
-    border-color: #D62929;
-}
-
-.category-btn.active {
-    background: #D62929;
-    color: #fff;
-    border-color: #D62929;
-    box-shadow: 0 0 12px rgba(214, 41, 41, 0.5);
-}
-
-/* ডানপাশের চ্যানেল সাইডবার গ্রিড */
+/* চ্যানেল লিস্টের স্ক্রলবার ও কন্টেইনার */
 .channel-list { 
     padding-left: 15px; 
-    height: 520px; 
+    height: 450px; 
     overflow-y: auto; 
     overflow-x: hidden; 
     -webkit-overflow-scrolling: touch; 
@@ -105,139 +25,100 @@ iframe {
     padding: 0;  
 }
 
-.thumbnail-slider li { 
+/* প্রতিটি চ্যানেল গ্রিড আইটেম */
+.thumbnail-slider li.channel-item { 
     list-style: none; 
-    margin-bottom: 12px; 
+    margin-bottom: 20px; 
+    text-align: center; /* লোগো ও টেক্সট সেন্টারে রাখার জন্য */
 }
 
-.thumbnail-slider li img { 
+.thumbnail-slider li.channel-item a {
+    display: block;
+    text-decoration: none;
+}
+
+/* চ্যানেল লোগো ইমেজ স্টাইল */
+.thumbnail-slider li.channel-item img { 
     width: 100%; 
     height: auto !important; 
     border-radius: 8px; 
-    border: 1px solid #1c1c24;
-    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s ease;
+    display: block;
+    margin-bottom: 8px; /* লোগো থেকে নামের দূরত্ব */
 }
 
-/* পিসিতে হোভার এবং টিভিতে ফোকাস ইফেক্ট */
-.thumbnail-slider li img:hover {
-    transform: scale(1.03);
-    border-color: #D62929;
-    box-shadow: 0 0 10px rgba(214, 41, 41, 0.4);
+/* হোভার এফেক্ট */
+.thumbnail-slider li.channel-item a:hover img {
+    transform: scale(1.04);
 }
 
-/* চ্যানেল স্ক্রোলবার প্রিমিয়াম লুক */
+/* লোগোর নিচের চ্যানেলের নাম */
+.channel-name {
+    display: block;
+    color: #ffffff !important;
+    font-size: 13px !important;
+    font-family: Arial, sans-serif !important;
+    font-weight: bold;
+    text-align: center;
+    white-space: normal; /* নাম বড় হলে নিচে ভেঙে যাবে */
+    line-height: 1.4;
+    padding: 0 5px;
+}
+
+/* কাস্টম স্ক্রলবার */
 .channel-list::-webkit-scrollbar {
-    width: 6px;
-    background-color: #08080a;
+    width: 8px;
+    background-color: #1e1e1e;
 }
 .channel-list::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background-color: #222230;
-}
-.channel-list::-webkit-scrollbar-thumb:hover {
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.5);
     background-color: #D62929;
 }
 
-/* নোটিশ মার্কি সেকশন */
-.marquee-container {
-    background: #111116;
-    color: #ffffff;
-    padding: 10px 0;
+/* Next & Previous বাটন কন্টেইনার */
+.player-controls {
     display: flex;
-    align-items: center;
-    border-top: 1px solid #1c1c24;
-    border-bottom: 1px solid #1c1c24;
-    font-size: 14px;
-}
-.notice-label {
-    background: #D62929;
-    color: #fff;
-    padding: 3px 12px;
-    margin-left: 15px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: 12px;
-    flex-shrink: 0;
-    box-shadow: 0 0 8px rgba(214, 41, 41, 0.4);
-}
-
-/* ফুটার এবং টেলিগ্রাম কার্ড */
-.footer-premium {
-    background: #050507;
-    padding: 25px 0;
-    text-align: center;
-    border-top: 1px solid #12121a;
-}
-.tg-card {
-    background: #0f0f14;
-    border: 1px solid #1c1c24;
-    padding: 15px;
-    border-radius: 8px;
-    display: inline-block;
-    max-width: 400px;
-    width: 90%;
-}
-.tg-card h5 { color: #fff; font-size: 16px; margin-bottom: 6px; }
-.tg-card p { color: #7a7a85; font-size: 12px; margin-bottom: 10px; }
-
-.telegram-btn {
-    display: inline-block;
-    background: #0088cc;
-    color: #fff;
-    padding: 6px 20px;
-    font-size: 12px;
-    font-weight: bold;
-    border-radius: 4px;
-}
-.telegram-btn:hover {
-    background: #006699;
-    color: #fff;
-}
-.copyright {
-    color: #4a4a57;
-    font-size: 12px;
+    justify-content: space-between;
     margin-top: 15px;
+    gap: 15px;
 }
 
-/* ========================================================
-   মাল্টি-ডিভাইস রেসপনসিভনেস (Mobile, Tablet & TV)
-   ======================================================== */
-
-/* ট্যাবলেট এবং ছোট পিসি স্ক্রিন */
-@media (max-width: 1199px) {
-    .channel-list { height: 420px; }
+/* মূল বাটন স্টাইল */
+.control-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #d62929, #991b1b);
+    color: #ffffff;
+    border: none;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    text-align: center;
 }
 
-/* মোবাইল রেসপনসিভনেস (স্মার্টফোন ইউজারদের জন্য স্পেশাল গ্রিড) */
-@media (max-width: 991px) {
-    .tv-area { margin-top: 10px; }
+.control-btn:hover {
+    background: linear-gradient(135deg, #f03e3e, #b91c1c);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(214, 41, 41, 0.4);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+}
+
+/* রেসপন্সিভনেস (মোবাইল স্ক্রিন) */
+@media (max-width: 768px) {
     .channel-list { 
-        padding-left: 0; 
         height: auto; 
-        margin-top: 15px; 
+        margin-top: 30px;
     }
-    /* মোবাইলে নিচে নিচে না দেখিয়ে চ্যানেলগুলোকে ২ কলামের গ্রিড করা হয়েছে */
-    .thumbnail-slider {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-    .thumbnail-slider li { margin-bottom: 0; }
-}
-
-/* অতি ছোট মোবাইল স্ক্রিন */
-@media (max-width: 480px) {
-    .category-btn {
-        padding: 5px 14px;
+    .control-btn {
+        padding: 10px 15px;
         font-size: 12px;
     }
-    .thumbnail-slider {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* অ্যান্ড্রয়েড টিভি ও বড় মনিটর অপ্টিমাইজেশন */
-@media (min-width: 1400px) {
-    .container { max-width: 1320px; }
-    .channel-list { height: 680px; }
 }

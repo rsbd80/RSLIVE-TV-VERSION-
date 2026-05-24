@@ -1,47 +1,139 @@
 @import url('https://fonts.googleapis.com/css?family=Rambla:400i');
 
-a {
-    color: #ffffff;
-    text-decoration: none;
-    font-size: xx-large;
-    font-family: cursive;
-}
 body {
-    background: #121212;
+    background: #000;
     color: #fff;
+    font-family: Arial, sans-serif;
 }
+
 a {
     cursor: pointer;
-    font-size: 15px;
+    text-decoration: none;
+    color: #ffffff;
 }
 
-.tv-area { margin-top: 50px; }
-.channel-list { padding-left: 0; height: 520px; white-space: nowrap; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
-.thumbnail-slider { margin:0; padding:0;  }
-.thumbnail-slider li { list-style: none; margin-bottom: 10px; }
-.thumbnail-slider li img { width: 100%; height: auto !important; border-radius: 5px; }
-
-
- .channel-list::-webkit-scrollbar {
- width: 12px;
- border-radius: 10px;
- background-color: #F5F5F5;
-}
- .channel-list::-webkit-scrollbar-thumb {
- border-radius: 10px;
- -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
- background-color: #D62929;
+.tv-area { 
+    margin-top: 30px; 
 }
 
+/* প্লেয়ারের নিচের ক্যাটাগরি সেকশন */
+.category-wrapper {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    border-radius: 8px;
+    padding: 10px;
+}
 
- @media (max-width: 1199px) {
-	 .channel-list { height: 425px; }
- }
-  @media (max-width: 990px) {
-	  .channel-list { padding: 10px 15px; height: auto !important; overflow-y: hidden; overflow-x: auto; }
-	  .thumbnail-slider li { display: inline-block; margin: 0 5px 0 0; }
-	  .thumbnail-slider li a { display: block; width: 80px; }
-  }
-@media (max-width: 410px) {
-	.thumbnail-slider li a { width: 50px; }
+.category-list-buttons {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 5px;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* হাইড স্ক্রোলবার কিন্তু ফাংশনাল রাখা */
+.category-list-buttons::-webkit-scrollbar {
+    height: 4px;
+}
+.category-list-buttons::-webkit-scrollbar-thumb {
+    background: #222;
+    border-radius: 10px;
+}
+
+/* প্রিমিয়াম নিয়ন ক্যাটাগরি বাটন স্টাইল */
+.category-btn {
+    background: #121212;
+    color: #aaa;
+    border: 1px solid #222;
+    padding: 6px 16px;
+    font-size: 13px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.category-btn:hover {
+    color: #fff;
+    border-color: #ff4444;
+}
+
+.category-btn.active {
+    background: #ff4444;
+    color: #fff;
+    border-color: #ff4444;
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.4);
+}
+
+/* চ্যানেল লিস্ট সাইডবার */
+.channel-list { 
+    padding-left: 15px; 
+    height: 520px; 
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    -webkit-overflow-scrolling: touch; 
+    scroll-behavior: smooth; 
+}
+
+.thumbnail-slider { 
+    margin: 0; 
+    padding: 0;  
+}
+
+.thumbnail-slider li { 
+    list-style: none; 
+    margin-bottom: 12px; 
+}
+
+.thumbnail-slider li img { 
+    width: 100%; 
+    height: auto !important; 
+    border-radius: 6px; 
+    border: 1px solid #1a1a1a;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.thumbnail-slider li img:hover {
+    transform: scale(1.02);
+    border-color: #ff4444;
+}
+
+/* স্ক্রোলবার কাস্টমাইজেশন */
+.channel-list::-webkit-scrollbar {
+    width: 6px;
+    background-color: #000;
+}
+.channel-list::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #222;
+}
+.channel-list::-webkit-scrollbar-thumb:hover {
+    background-color: #ff4444;
+}
+
+.telegram-btn {
+    display: inline-block;
+    background: #0088cc;
+    color: #fff;
+    padding: 6px 15px;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 4px;
+    margin-top: 5px;
+    transition: background 0.2s;
+}
+.telegram-btn:hover {
+    background: #006699;
+    color: #fff;
+}
+
+@media (max-width: 1199px) {
+    .channel-list { height: 400px; }
+}
+@media (max-width: 991px) {
+    .channel-list { height: auto; margin-top: 20px; }
 }

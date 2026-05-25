@@ -1,137 +1,124 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DRBZH98TKH"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}\n      gtag('js', new Date());
-      gtag('config', 'G-DRBZH98TKH');
-    </script>
-
-    <title>RS Live TV</title>
-
-    <link rel="shortcut icon" type="x-icon" href="https://i.postimg.cc/mD1VCt2C/RS-Live.png">
-    <link href="bootstrap.min.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
-
-    <style>
-        body {
-            background: #000;
-            overflow-x: hidden;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-        .tv-view .embed-responsive {
-            border: 1px solid #222;
-            border-radius: 8px;
-            background: #000;
-            overflow: hidden;
-        }
-        iframe {
-            border: 0 !important;
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-        .marquee-box {
-            background: #111;
-            color: #fff;
-            padding: 8px;
-            margin-top: 15px;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .tg-card {
-            background: #111;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border: 1px solid #222;
-        }
-        .telegram-btn {
-            display: inline-block;
-            background: #0088cc;
-            color: #fff !important;
-            padding: 8px 15px;
-            border-radius: 4px;
-            font-weight: bold;
-            text-decoration: none;
-            margin-top: 5px;
-            font-size: 13px;
-        }
-        .ad-box {
-            margin-top: 15px;
-            text-align: center;
-        }
-        .copyright {
-            color: #555;
-            font-size: 11px;
-            margin-top: 15px;
-            text-align: center;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>RS LIVE TV - Premium OTT Platform</title>
+    
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Watch Live TV, Sports, Movies, and Series on RS LIVE TV. Ultra fast streaming experience.">
+    <link rel="shortcut icon" href="https://i.postimg.cc/mD1VCt2C/RS-Live.png">
+    
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <link href="https://unpkg.com/@videojs/themes@1.0.1/dist/fantasy/index.css" rel="stylesheet">
+    <link href="https://unpkg.com/videojs-contrib-quality-levels@4.1.0/dist/videojs-contrib-quality-levels.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="container tv-area">
-        <div class="row">
-            <div class="col-md-8 tv-view">
-                <div class="embed-responsive embed-responsive-16by9" style="height: 450px;">
-                    <iframe id="player" name="player" src="channel.html" allowfullscreen></iframe>
-                </div>
-
-                <div class="player-controls">
-                    <button id="prev-btn" class="control-btn">⏮ Previous</button>
-                    <button id="next-btn" class="control-btn">Next ⏭</button>
-                </div>
-
-                <div class="marquee-box">
-                    <marquee scrollamount="4">RS LIVE TV-তে আপনাকে স্বাগতম! যেকোনো সমস্যায় আমাদের টেলিগ্রাম গ্রুপে জানান।</marquee>
-                </div>
-            </div>
-
-            <div class="col-md-4 channel-list">
-                <ul class="thumbnail-slider" id="channel-container">
-                    </ul>
-            </div>
-        </div>
+    <div id="app-loader" class="loader-container">
+        <div class="spinner"></div>
+        <p id="loader-text">Loading Premium Experience...</p>
     </div>
 
-    <footer>
-        <div class="container text-center" style="margin-top: 30px; padding-bottom: 20px;">
-            <div class="tg-card">
-                <h5 style="color:#fff; margin-bottom:5px; font-size:16px;">সাপোর্ট প্রয়োজন?</h5>
-                <p style="color:#777; font-size:11px; margin-bottom:5px;">আপডেট ও চ্যানেল রিকোয়েস্টের জন্য আমাদের টেলিগ্রাম গ্রুপে যোগ দিন।</p>
-                <a href="https://t.me/rslivetv" target="_blank" class="telegram-btn">JOIN TELEGRAM</a>
-            </div>
+    <div id="toast-notification" class="toast-hidden"></div>
 
-            <div class="ad-box">
-                <script type="text/javascript">
-                    atOptions = {
-                        'key' : '774c0e371455f6476668178b5faae5ab',
-                        'format' : 'iframe',
-                        'height' : 50,
-                        'width' : 320,
-                        'params' : {}
-                    };
-                </script>
-                <script type="text/javascript" src="//www.highperformanceformat.com/774c0e371455f6476668178b5faae5ab/invoke.js"></script>
+    <div class="app-container">
+        
+        <aside class="sidebar" id="main-sidebar">
+            <div class="brand">
+                <img src="https://i.postimg.cc/mD1VCt2C/RS-Live.png" alt="Logo" class="logo">
+                <span class="brand-name">RS LIVE<span class="pro-badge">PRO</span></span>
             </div>
-
-            <div class="copyright">
-                © 2026 RS LIVE TV | All Rights Reserved
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-target="all" tabindex="1"><i class="fa-solid fa-house"></i> <span>Home</span></a>
+                <a href="#" class="nav-item" data-target="Sports" tabindex="2"><i class="fa-solid fa-trophy"></i> <span>Sports</span></a>
+                <a href="#" class="nav-item" data-target="Live TV" tabindex="3"><i class="fa-solid fa-tv"></i> <span>Live TV</span></a>
+                <a href="#" class="nav-item" data-target="Movies" tabindex="4"><i class="fa-solid fa-clapperboard"></i> <span>Movies</span></a>
+                <a href="#" class="nav-item" data-target="Series" tabindex="5"><i class="fa-solid fa-folder-open"></i> <span>Series</span></a>
+                <a href="#" class="nav-item" data-target="favorites" tabindex="6"><i class="fa-solid fa-heart"></i> <span>Favorites</span></a>
+            </nav>
+            <div class="live-clock">
+                <i class="fa-regular fa-clock"></i> <span id="digital-clock">00:00:00 PM</span>
             </div>
-        </div>
-    </footer>
+        </aside>
 
-    <script src="script.js"></script>
-    <script>
-        // রাইট ক্লিক বন্ধ রাখার স্ক্রিপ্ট
-        document.addEventListener('contextmenu', event => event.preventDefault());
-    </script>
+        <main class="main-content">
+            
+            <header class="main-header">
+                <div class="search-box-container">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="search-input" placeholder="Search channels, sports, movies..." tabindex="7">
+                </div>
+                <div class="header-actions">
+                    <div class="header-status"><span class="status-dot"></span> Streaming Server Online</div>
+                </div>
+            </header>
+
+            <section class="hero-banner" id="hero-slider">
+                <div class="hero-slide active" style="background-image: linear-gradient(to top, #000 10%, rgba(0,0,0,0.3) 100%), url('https://assets-prod.services.toffeelive.com/w_480,q_75,f_webp/ljE2lZ0BNnOkwJLW9lrg/posters/b4bee75a-b8a3-4594-b562-6e3910d71625.png');">
+                    <div class="hero-content">
+                        <span class="badge-live"><i class="fa-solid fa-circle"></i> LIVE EVENTS</span>
+                        <h1 id="hero-title">BANGLADESH vs PAKISTAN</h1>
+                        <p id="hero-desc">Enjoy high-definition live cricket match streaming with alternative premium multi-servers.</p>
+                        <button class="btn-play" id="hero-play-btn" tabindex="8"><i class="fa-solid fa-play"></i> Watch Now</button>
+                    </div>
+                </div>
+            </section>
+
+            <div class="category-scroll-container" id="category-bar">
+                </div>
+
+            <section class="player-section section-hidden" id="player-wrapper">
+                <div class="player-container-inner">
+                    <div class="player-header-controls">
+                        <h3 id="current-playing-title">Playing Channel</h3>
+                        <button class="close-player-btn" onclick="closePlayer()"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    
+                    <div class="video-container" id="video-box">
+                        <video id="rs-video-player" class="video-js vjs-theme-fantasy vjs-big-play-centered" controls preload="auto" width="640" height="360">
+                            <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video</p>
+                        </video>
+                        </div>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <div class="section-title-wrapper">
+                    <h2 class="section-title" id="grid-title">All Channels & Streams</h2>
+                    <span class="total-count" id="channel-count">0 Channels Available</span>
+                </div>
+                
+                <div class="channels-grid" id="channels-grid-container">
+                    </div>
+            </section>
+
+            <footer class="app-footer">
+                <div class="ad-placeholder" id="ad-banner-space">
+                    <div class="ad-label">SPONSORED ADVERTISEMENT</div>
+                    <div id="adsterra-wrapper"></div>
+                </div>
+                <p class="copyright">&copy; 2026 <span>RS LIVE TV PRO</span> | All Rights Reserved. Powered by Premium Cloud-Proxy Engine.</p>
+            </footer>
+        </main>
+    </div>
+
+    <div class="mobile-bottom-nav">
+        <a href="#" class="m-nav-item active" data-target="all"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="#" class="m-nav-item" data-target="Sports"><i class="fa-solid fa-trophy"></i><span>Sports</span></a>
+        <a href="#" class="m-nav-item" data-target="Live TV"><i class="fa-solid fa-tv"></i><span>Live TV</span></a>
+        <a href="#" class="m-nav-item" data-target="favorites"><i class="fa-solid fa-heart"></i><span>Favs</span></a>
+    </div>
+
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <script src="https://unpkg.com/videojs-contrib-quality-levels@4.1.0/dist/videojs-contrib-quality-levels.min.js"></script>
+    <script src="https://unpkg.com/@silvermine/videojs-chromecast@1.4.0/dist/videojs-chromecast.min.js"></script>
+    
+    <script src="app.js"></script>
 </body>
 </html>

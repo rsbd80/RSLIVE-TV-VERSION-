@@ -57,59 +57,65 @@
             font-size: 11px;
             flex-shrink: 0;
         }
-        .footer-premium {
-            background: #0a0a0a;
-            padding: 20px 0 30px 0;
-            text-align: center;
-        }
         
-        /* নতুন ক্যাটাগরি বাটন এবং রিমোট ফোকাস স্টাইল */
+        /* নতুন ক্যাটাগরি এবং নামের সুন্দর স্টাইল */
         .category-container {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 15px;
             overflow-x: auto;
-            padding-bottom: 5px;
+            padding-bottom: 8px;
+        }
+        /* ব্রাউজারের ডিফল্ট স্ক্রলবার হাইড করার জন্য */
+        .category-container::-webkit-scrollbar {
+            display: none;
         }
         .category-btn {
-            background: #222;
-            color: #fff;
-            border: 1px solid #444;
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-size: 13px;
+            background: #1a1a1a;
+            color: #ccc;
+            border: 1px solid #333;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             white-space: nowrap;
         }
         .category-btn.active, .category-btn:hover {
             background: #ff4444;
-            border-color: #ff4444;
-        }
-        .thumbnail-slider li a {
-            display: block;
-            border: 2px solid transparent;
-            border-radius: 5px;
-            padding: 3px;
-            transition: all 0.2s ease;
-            outline: none;
-        }
-        /* রিমোট কন্ট্রোল দিয়ে ফোকাস করলে বা মাউস হোভার করলে এই হাইলাইটটি দেখাবে */
-        .thumbnail-slider li a:focus, .thumbnail-slider li a.remote-focus {
-            border-color: #ff4444;
-            background: rgba(255, 68, 68, 0.1);
-            transform: scale(1.03);
-        }
-        .channel-name {
-            display: block;
             color: #fff;
-            font-size: 12px;
+            border-color: #ff4444;
+        }
+        
+        /* লোগোর নিচে চ্যানেলের নামের ফিক্সড সাইজ */
+        .channel-title-text {
+            display: block;
+            color: #ffffff !important;
+            font-size: 12px !important; /* বড় ফন্ট ফিক্স করা হলো */
+            font-family: Arial, sans-serif !important;
             text-align: center;
-            margin-top: 5px;
+            margin-top: 6px;
+            margin-bottom: 5px;
+            font-weight: normal;
             text-transform: uppercase;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+        }
+
+        /* রিমোট কন্ট্রোল দিয়ে সিলেক্ট করলে বা মাউস নিলে হাইলাইট */
+        .thumbnail-slider li a {
+            display: block;
+            outline: none;
+            border: 2px solid transparent;
+            border-radius: 6px;
+            padding: 2px;
+            transition: transform 0.2s;
+        }
+        .thumbnail-slider li a:focus, .thumbnail-slider li a.remote-focus {
+            border-color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+            transform: scale(1.02);
         }
     </style>
 </head>
@@ -118,7 +124,7 @@
     <div class="marquee-container">
         <span class="notice-label">NOTICE</span>
         <marquee direction="left" scrollamount="4" style="font-size: 13px;">
-            আমাদের RS LIVE TV অ্যাপ ও ওয়েবসাইটে আপনাকে স্বাগতম! যেকোনো চ্যানেল দেখতে নিচের লোগোতে ক্লিক করুন।
+            আমাদের RS LIVE TV অ্যাপ ও ওয়েবসাইটে আপনাকে স্বাগত! যেকোনো চ্যানেল দেখতে নিচের লোগোতে ক্লিক করুন।
         </marquee>
     </div>
 
@@ -146,14 +152,28 @@
         </div>
     </div>
 
-    <footer class="footer-premium">
+    <footer class="footer-premium" style="background: #0a0a0a; padding: 20px 0 30px 0; text-align: center;">
         <div class="container">
             <div class="tg-card" style="margin-bottom: 20px;">
                 <h5 style="color:#fff; margin-bottom:5px; font-size:16px;">সাপোর্ট প্রয়োজন?</h5>
                 <p style="color:#777; font-size:11px; margin-bottom:5px;">আপডেট ও চ্যানেল রিকোয়েস্টের জন্য আমাদের টেলিগ্রাম গ্রুপে যোগ দিন।</p>
-                <a href="https://t.me/rslivetv" target="_blank" class="btn btn-danger btn-sm">JOIN TELEGRAM</a>
+                <a href="https://t.me/rslivetv" target="_blank" class="btn btn-danger btn-sm" style="font-size: 12px; font-family: Arial;">JOIN TELEGRAM</a>
             </div>
-            <div class="copyright" style="color: #666; font-size: 12px;">
+
+            <div class="ad-box" style="margin-bottom: 15px;">
+                <script type="text/javascript">
+                    atOptions = {
+                        'key' : '774c0e371455f6476668178b5faae5ab',
+                        'format' : 'iframe',
+                        'height' : 50,
+                        'width' : 320,
+                        'params' : {}
+                    };
+                </script>
+                <script type="text/javascript" src="//www.highperformanceformat.com/774c0e371455f6476668178b5faae5ab/invoke.js"></script>
+            </div>
+
+            <div class="copyright" style="color: #666; font-size: 12px; font-family: Arial;">
                 © 2026 RS LIVE TV | All Rights Reserved
             </div>
         </div>

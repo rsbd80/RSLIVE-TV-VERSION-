@@ -3,18 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RS LIVE TV - Premium OTT Platform</title>
+    <title>RS LIVE TV PRO - Premium OTT Platform</title>
     
-    <meta name="theme-color" content="#000000">
-    <meta name="description" content="Watch Live TV, Sports, Movies, and Series on RS LIVE TV. Ultra fast streaming experience.">
+    <meta name="theme-color" content="#07070a">
     <link rel="shortcut icon" href="https://i.postimg.cc/mD1VCt2C/RS-Live.png">
     
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <link href="https://unpkg.com/@videojs/themes@1.0.1/dist/fantasy/index.css" rel="stylesheet">
-    <link href="https://unpkg.com/videojs-contrib-quality-levels@4.1.0/dist/videojs-contrib-quality-levels.css" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
 </head>
@@ -22,103 +20,98 @@
 
     <div id="app-loader" class="loader-container">
         <div class="spinner"></div>
-        <p id="loader-text">Loading Premium Experience...</p>
+        <p id="loader-text">Loading RS LIVE TV Experience...</p>
     </div>
 
-    <div id="toast-notification" class="toast-hidden"></div>
+    <div id="toast" class="toast-hidden"></div>
 
-    <div class="app-container">
+    <div class="app-layout">
         
-        <aside class="sidebar" id="main-sidebar">
-            <div class="brand">
-                <img src="https://i.postimg.cc/mD1VCt2C/RS-Live.png" alt="Logo" class="logo">
-                <span class="brand-name">RS LIVE<span class="pro-badge">PRO</span></span>
+        <aside class="sidebar" id="app-sidebar">
+            <div class="brand-zone">
+                <img src="https://i.postimg.cc/mD1VCt2C/RS-Live.png" alt="Logo" class="app-logo">
+                <span class="brand-text">RS LIVE <span class="badge-pro">PRO</span></span>
             </div>
-            <nav class="nav-menu">
-                <a href="#" class="nav-item active" data-target="all" tabindex="1"><i class="fa-solid fa-house"></i> <span>Home</span></a>
-                <a href="#" class="nav-item" data-target="Sports" tabindex="2"><i class="fa-solid fa-trophy"></i> <span>Sports</span></a>
-                <a href="#" class="nav-item" data-target="Live TV" tabindex="3"><i class="fa-solid fa-tv"></i> <span>Live TV</span></a>
-                <a href="#" class="nav-item" data-target="Movies" tabindex="4"><i class="fa-solid fa-clapperboard"></i> <span>Movies</span></a>
-                <a href="#" class="nav-item" data-target="Series" tabindex="5"><i class="fa-solid fa-folder-open"></i> <span>Series</span></a>
-                <a href="#" class="nav-item" data-target="favorites" tabindex="6"><i class="fa-solid fa-heart"></i> <span>Favorites</span></a>
+            <nav class="nav-links">
+                <a href="#" class="nav-btn active" data-target="all" tabindex="1"><i class="fa-solid fa-house"></i> <span>Home</span></a>
+                <a href="#" class="nav-btn" data-target="Sports" tabindex="2"><i class="fa-solid fa-trophy"></i> <span>Sports</span></a>
+                <a href="#" class="nav-btn" data-target="Live TV" tabindex="3"><i class="fa-solid fa-tv"></i> <span>Live TV</span></a>
+                <a href="#" class="nav-btn" data-target="Movies" tabindex="4"><i class="fa-solid fa-clapperboard"></i> <span>Movies</span></a>
+                <a href="#" class="nav-btn" data-target="Series" tabindex="5"><i class="fa-solid fa-folder-open"></i> <span>Series</span></a>
+                <a href="#" class="nav-btn" data-target="favs" tabindex="6"><i class="fa-solid fa-heart"></i> <span>Favorites</span></a>
             </nav>
-            <div class="live-clock">
-                <i class="fa-regular fa-clock"></i> <span id="digital-clock">00:00:00 PM</span>
+            <div class="sidebar-footer">
+                <i class="fa-regular fa-clock"></i> <span id="live-clock">00:00:00 PM</span>
             </div>
         </aside>
 
-        <main class="main-content">
+        <main class="main-viewport">
             
-            <header class="main-header">
-                <div class="search-box-container">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" id="search-input" placeholder="Search channels, sports, movies..." tabindex="7">
+            <header class="top-navbar">
+                <div class="search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass search-bar-icon"></i>
+                    <input type="text" id="search-input" placeholder="Search live channels, matches, movies..." tabindex="7">
                 </div>
-                <div class="header-actions">
-                    <div class="header-status"><span class="status-dot"></span> Streaming Server Online</div>
+                <div class="server-status-badge">
+                    <span class="pulse-dot"></span> Cloud Proxy Server Active
                 </div>
             </header>
 
-            <section class="hero-banner" id="hero-slider">
-                <div class="hero-slide active" style="background-image: linear-gradient(to top, #000 10%, rgba(0,0,0,0.3) 100%), url('https://assets-prod.services.toffeelive.com/w_480,q_75,f_webp/ljE2lZ0BNnOkwJLW9lrg/posters/b4bee75a-b8a3-4594-b562-6e3910d71625.png');">
-                    <div class="hero-content">
-                        <span class="badge-live"><i class="fa-solid fa-circle"></i> LIVE EVENTS</span>
-                        <h1 id="hero-title">BANGLADESH vs PAKISTAN</h1>
-                        <p id="hero-desc">Enjoy high-definition live cricket match streaming with alternative premium multi-servers.</p>
-                        <button class="btn-play" id="hero-play-btn" tabindex="8"><i class="fa-solid fa-play"></i> Watch Now</button>
+            <section class="player-wrapper player-hidden" id="video-canvas-section">
+                <div class="player-inner-frame">
+                    <div class="player-hud-header">
+                        <h4 id="now-playing-title">Loading Stream...</h4>
+                        <button class="player-exit-btn" onclick="terminatePlayback()"><i class="fa-solid fa-xmark"></i></button>
                     </div>
-                </div>
-            </section>
-
-            <div class="category-scroll-container" id="category-bar">
-                </div>
-
-            <section class="player-section section-hidden" id="player-wrapper">
-                <div class="player-container-inner">
-                    <div class="player-header-controls">
-                        <h3 id="current-playing-title">Playing Channel</h3>
-                        <button class="close-player-btn" onclick="closePlayer()"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
-                    
-                    <div class="video-container" id="video-box">
-                        <video id="rs-video-player" class="video-js vjs-theme-fantasy vjs-big-play-centered" controls preload="auto" width="640" height="360">
-                            <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video</p>
+                    <div class="video-holder">
+                        <video id="ott-core-player" class="video-js vjs-theme-fantasy vjs-big-play-centered" controls preload="auto">
+                            <p class="vjs-no-js">Enable JavaScript to experience ultimate playback.</p>
                         </video>
-                        </div>
+                    </div>
                 </div>
             </section>
 
-            <section class="content-section">
-                <div class="section-title-wrapper">
-                    <h2 class="section-title" id="grid-title">All Channels & Streams</h2>
-                    <span class="total-count" id="channel-count">0 Channels Available</span>
+            <section class="hero-carousel" id="featured-slider">
+                <div class="slide-item" style="background-image: linear-gradient(to top, #07070a 15%, rgba(7,7,10,0.2) 100%), url('https://assets-prod.services.toffeelive.com/w_480,q_75,f_webp/ljE2lZ0BNnOkwJLW9lrg/posters/b4bee75a-b8a3-4594-b562-6e3910d71625.png');">
+                    <div class="slide-details">
+                        <span class="live-tag"><i class="fa-solid fa-circle"></i> BANGLADESH CRICKET LIVE</span>
+                        <h2>BANGLADESH vs PAKISTAN</h2>
+                        <p>Experience uninterrupted, zero lag premium multi-server live action on your web screen.</p>
+                        <button class="hero-play-action-btn" id="featured-play-trigger" tabindex="8"><i class="fa-solid fa-play"></i> STREAM NOW</button>
+                    </div>
                 </div>
-                
-                <div class="channels-grid" id="channels-grid-container">
+            </section>
+
+            <div class="category-chips-shelf" id="dynamic-category-shelf"></div>
+
+            <section class="grid-content-section">
+                <div class="grid-header-meta">
+                    <h3 class="section-headline" id="viewport-grid-title">All Streams</h3>
+                    <div class="counter-badge" id="stream-total-counter">0 Channels</div>
+                </div>
+                <div class="ott-channels-grid" id="ott-main-grid">
                     </div>
             </section>
 
-            <footer class="app-footer">
-                <div class="ad-placeholder" id="ad-banner-space">
-                    <div class="ad-label">SPONSORED ADVERTISEMENT</div>
-                    <div id="adsterra-wrapper"></div>
+            <footer class="ott-footer">
+                <div class="adsterra-banner-slot">
+                    <div class="ad-info-text">SPONSORED ADVERTISING SPACE</div>
+                    <div id="adsterra-injection-point"></div>
                 </div>
-                <p class="copyright">&copy; 2026 <span>RS LIVE TV PRO</span> | All Rights Reserved. Powered by Premium Cloud-Proxy Engine.</p>
+                <p class="copyright-note">&copy; 2026 <span class="neon-text">RS LIVE TV PRO</span> | Cloud Aggregator Interface.</p>
             </footer>
         </main>
     </div>
 
-    <div class="mobile-bottom-nav">
-        <a href="#" class="m-nav-item active" data-target="all"><i class="fa-solid fa-house"></i><span>Home</span></a>
-        <a href="#" class="m-nav-item" data-target="Sports"><i class="fa-solid fa-trophy"></i><span>Sports</span></a>
-        <a href="#" class="m-nav-item" data-target="Live TV"><i class="fa-solid fa-tv"></i><span>Live TV</span></a>
-        <a href="#" class="m-nav-item" data-target="favorites"><i class="fa-solid fa-heart"></i><span>Favs</span></a>
+    <div class="mobile-navigation-dock">
+        <a href="#" class="m-dock-btn active" data-target="all"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="#" class="m-dock-btn" data-target="Sports"><i class="fa-solid fa-trophy"></i><span>Sports</span></a>
+        <a href="#" class="m-dock-btn" data-target="Live TV"><i class="fa-solid fa-tv"></i><span>Live TV</span></a>
+        <a href="#" class="m-dock-btn" data-target="favs"><i class="fa-solid fa-heart"></i><span>Favs</span></a>
     </div>
 
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-    <script src="https://unpkg.com/videojs-contrib-quality-levels@4.1.0/dist/videojs-contrib-quality-levels.min.js"></script>
-    <script src="https://unpkg.com/@silvermine/videojs-chromecast@1.4.0/dist/videojs-chromecast.min.js"></script>
-    
     <script src="app.js"></script>
+    <script src="player.js"></script>
 </body>
 </html>

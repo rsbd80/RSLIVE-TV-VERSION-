@@ -1,107 +1,39 @@
-let allChannels = []; 
-let filteredChannels = []; 
-let currentFocusIndex = -1; 
+// ১. চ্যানেল সার্চ ফিল্টার
+function filterChannels() {
+    let input = document.getElementById('channelSearch').value.toLowerCase();
+    let items = document.querySelectorAll('#channel-container li');
+    items.forEach(item => {
+        item.style.display = item.innerText.toLowerCase().includes(input) ? "" : "none";
+    });
+}
 
-document.addEventListener('DOMContentLoaded', function() {
-    const container = document.getElementById('channel-container');
+// ২. রিমোট ও কিবোর্ড কন্ট্রোল
+document.addEventListener('keydown', function(event) {
+    // যদি সার্চবারে ফোকাস থাকে, তবে রিমোট লজিক কাজ করবে না (টাইপিং ঠিক রাখতে)
+    if (document.activeElement.id === 'channelSearch') return;
 
-    // JSON ফাইল থেকে চ্যানেল লোড করা
-    fetch('playlist.json')
-        .then(response => response.json())
-        .then(data => {
-            allChannels = data;
-            filteredChannels = data; 
-            displayChannels(allChannels); 
-            setupRemoteControl(); 
-        })
-        .catch(error => {
-            console.error('Error loading playlist:', error);
-            if(container) container.innerHTML = '<p style="color:red; font-size:12px; text-align:center;">Error loading channels!</p>';
-        });
+    const items = Array.from(document.querySelectorAll('#channel-container li')).filter(el => el.style.display !== 'none');
+    if (items.length === 0) return;
+    
+    const active = document.activeElement;
+    let index = items.indexOf(active);
+
+    if (event.keyCode === 32) event.preventDefault(); // স্পেস বাটন লক
+
+    if (event.keyCode === 40) { // Down
+        event.preventDefault();
+        if (index + 1 < items.length) items[index + 1].focus();
+    } else if (event.keyCode === 38) { // Up
+        event.preventDefault();
+        if (index - 1 >= 0) items[index - 1].focus();
+    } else if (event.keyCode === 13) { // Enter
+        if (active && active.tagName === 'LI') active.click();
+    }
 });
 
-// চ্যানেল রেন্ডার করার ফাংশন
-function displayChannels(channels) {
-    const container = document.getElementById('channel-container');
-    container.innerHTML = ''; 
-    currentFocusIndex = -1; 
-
-    if(channels.length === 0) {
-        container.innerHTML = '<p style="color:#777; font-size:12px; text-align:center; padding-top:20px; font-family:Arial;">No channels found</p>';
-        return;
+// ৩. অটো স্ক্রোল
+window.addEventListener('focus', function(event) {
+    if (event.target && event.target.tagName === 'LI') {
+        event.target.scrollIntoView({ block: 'center', behavior: 'smooth' });
     }
-
-    channels.forEach((channel, index) => {
-        const li = document.createElement('li');
-        
-        // অরিজিনাল অনক্লিক প্লেয়ার কোড ও লোগোর নিচে নাম
-        li.innerHTML = `
-            <a href="javascript:void(0);" onclick="player.location.href='${channel.url}'" class="channel-item" data-index="${index}" tabindex="0">
-                <img src="${channel.image}" alt="${channel.name}">
-                <span class="channel-title-text">${channel.name}</span>
-            </a>
-        `;
-        container.appendChild(li);
-    });
-}
-
-// ক্যাটাগরি ফিল্টার ফাংশন
-function filterCategory(categoryName) {
-    const buttons = document.querySelectorAll('.category-btn');
-    buttons.forEach(btn => btn.classList.remove('active'));
-    
-    const event = window.event;
-    if(event && event.target) {
-        event.target.classList.add('active');
-    }
-
-    if (categoryName === 'All') {
-        filteredChannels = allChannels;
-    } else {
-        filteredChannels = allChannels.filter(channel => channel.category === categoryName);
-    }
-    displayChannels(filteredChannels);
-}
-
-// ২. রিমোট কন্ট্রোল টিভি সাপোর্ট (৪টি ডিরেকশন এবং এন্টার বাটন)
-function setupRemoteControl() {
-    document.addEventListener('keydown', function(e) {
-        const visibleChannels = document.querySelectorAll('.channel-item');
-        if (visibleChannels.length === 0) return;
-
-        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-            e.preventDefault();
-            currentFocusIndex++;
-            if (currentFocusIndex >= visibleChannels.length) currentFocusIndex = 0;
-            updateRemoteFocus(visibleChannels);
-        } 
-        else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-            e.preventDefault();
-            currentFocusIndex--;
-            if (currentFocusIndex < 0) currentFocusIndex = visibleChannels.length - 1;
-            updateRemoteFocus(visibleChannels);
-        } 
-        else if (e.key === 'Enter') {
-            if (currentFocusIndex >= 0 && currentFocusIndex < visibleChannels.length) {
-                e.preventDefault();
-                visibleChannels[currentFocusIndex].click(); 
-            }
-        }
-    });
-}
-
-function updateRemoteFocus(elements) {
-    elements.forEach(el => el.classList.remove('remote-focus'));
-    
-    if (currentFocusIndex >= 0 && elements[currentFocusIndex]) {
-        const activeEl = elements[currentFocusIndex];
-        activeEl.classList.add('remote-focus');
-        activeEl.focus(); 
-        
-        activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-}
-
-function disableClick() {
-    document.oncontextmenu = function() { return false; };
-}
+}, true);

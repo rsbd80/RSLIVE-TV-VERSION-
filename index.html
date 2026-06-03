@@ -103,7 +103,7 @@
         @keyframes fadeInText { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes dotPulse { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
 
-        /* ✨ আল্ট্রা-প্রিমিয়াম গ্লোয়িং লোগো এবং টপ বার */
+        /* ✨ টপ বার এবং লোগো এরিয়া (ফ্লেক্স কন্টেইনার) */
         .top-bar-wrapper {
             display: flex;
             justify-content: space-between;
@@ -111,6 +111,7 @@
             padding: 15px 10px;
             background: linear-gradient(180deg, rgba(13,13,21,0.6) 0%, rgba(6,6,12,0) 100%);
             margin-bottom: 10px;
+            position: relative;
         }
 
         .brand-title-neon {
@@ -153,6 +154,51 @@
             100% { text-shadow: 0 0 25px rgba(255, 0, 85, 0.9), 0 0 10px rgba(255, 0, 85, 0.4); }
         }
 
+        /* 🔍 প্লেয়ারের উপর ডান কর্নারের জন্য ছোট ও স্টাইলিশ সার্চ বক্স */
+        .player-top-search-box {
+            position: relative;
+            width: 140px; /* ডেক্সটপে ছোট ও মিনিমাল সাইজ */
+            box-sizing: border-box;
+        }
+
+        .player-top-search-box input {
+            width: 100%;
+            padding: 5px 28px 5px 10px;
+            background: #111118;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 11.5px;
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .player-top-search-box input:focus {
+            border-color: #00f0ff;
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+            background: #141422;
+            width: 170px; /* ফোকাস করলে ডানপাশে কিছুটা বড় হবে দেখতে সুন্দর লাগবে */
+        }
+
+        .search-icon-inside {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            color: #515161;
+            pointer-events: none;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .player-top-search-box input:focus + .search-icon-inside {
+            color: #00f0ff;
+        }
+
         .tv-view .embed-responsive {
             border: 1px solid #1f2029;
             border-radius: 12px;
@@ -167,98 +213,55 @@
             height: 100%;
         }
 
-        /* 🔍 প্রিমিয়াম মডার্ন সার্চ কন্টেইনার */
-        .channel-search-box-premium {
-            position: relative;
-            width: 100%;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-        }
-
-        .channel-search-box-premium input {
-            width: 100%;
-            padding: 9px 38px 9px 12px;
-            background: #111118;
-            border: 1px solid rgba(0, 240, 255, 0.25);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 13px;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        .channel-search-box-premium input:focus {
-            border-color: #00f0ff;
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
-            background: #141422;
-        }
-
-        .search-icon-inside {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 15px;
-            height: 15px;
-            color: #717181;
-            pointer-events: none;
-            transition: color 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .channel-search-box-premium input:focus + .search-icon-inside {
-            color: #00f0ff;
-        }
-
         /* 🏷️ ডাইনামিক হরাইজন্টাল ক্যাটাগরি বাটন এরিয়া */
         .category-container-premium {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             overflow-x: auto;
             white-space: nowrap;
-            padding-bottom: 8px;
-            margin-bottom: 12px;
-            scrollbar-width: none; /* Firefox */
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
         }
         .category-container-premium::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
+            display: none;
         }
         .cat-btn-premium {
-            background: #12121a;
-            color: #a0a0b0;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 5px 12px;
-            font-size: 11px;
+            background: #111116;
+            color: #777788;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 4px 10px;
+            font-size: 10px;
             font-weight: bold;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
             transition: all 0.2s ease;
+            flex-shrink: 0;
         }
         .cat-btn-premium:hover {
             color: #fff;
-            border-color: rgba(0, 240, 255, 0.3);
+            border-color: rgba(0, 240, 255, 0.2);
         }
         .cat-btn-premium.active {
             background: linear-gradient(90deg, #00f0ff, #0072ff);
             color: #040406;
             border-color: transparent;
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.35);
         }
 
-        /* 📱 মোবাইলের জন্য সার্চ ও ক্যাটাগরি পজিশন ফিক্স */
-        @media (max-width: 990px) {
-            .channel-list-wrapper {
-                display: flex;
-                flex-direction: column;
-                margin-top: 15px;
-                padding: 0 15px;
-            }
-            .channel-search-box-premium {
-                margin-bottom: 8px;
-                width: 100%;
-            }
+        /* 📋 লাফালাফি ও ঝাঁকি প্রতিরোধক কন্টেইনার প্রপার্টি */
+        #channel-container {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            backface-visibility: hidden;
+            transform: translate3d(0,0,0);
+        }
+        #channel-container li {
+            backface-visibility: hidden;
+            transform: translate3d(0,0,0);
+            contain: layout style;
         }
 
         .marquee-container {
@@ -431,6 +434,16 @@
             font-size: 11px;
             margin-top: 15px;
         }
+
+        /* 📱 মোবাইলের জন্য রেসপন্সিভ এডজাস্টমেন্ট */
+        @media (max-width: 767px) {
+            .player-top-search-box {
+                width: 110px; /* মোবাইলে আরও কমপ্যাক্ট দেখাবে */
+            }
+            .player-top-search-box input:focus {
+                width: 130px;
+            }
+        }
     </style>
 </head>
 
@@ -451,42 +464,50 @@
     <div class="container tv-area">
         <div class="row">
             <div class="col-xs-12 col-md-10">
+                <!-- 🎯 লোগো টপ বার এরিয়ার ঠিক ডান কর্নারে সার্চবার সেট করা হয়েছে (প্লেয়ারের উপরে) -->
                 <div class="top-bar-wrapper">
                     <div class="brand-title-neon">
                         <span class="rs-glow">RS</span>
                         <span class="live-glow">LIVE</span>
                         <span class="neon-tv-tag">TV</span>
                     </div>
+
+                    <!-- 🔍 প্লেয়ারের উপর ডান কর্নারের জন্য ছোট সার্চ বক্স -->
+                    <div class="player-top-search-box">
+                        <input type="text" id="channelSearch" placeholder="Search..." autocomplete="off">
+                        <span class="search-icon-inside">
+                            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="row">
+            <!-- 🎬 বামপাশের প্লেয়ার উইন্ডো -->
             <div class="col-xs-12 col-md-10 tv-view">
                 <div class="embed-responsive embed-responsive-16by9">
                     <iframe id="tv-player-iframe" name="player" class="embed-responsive-item" allowfullscreen src="channel.html"></iframe>
                 </div>
             </div>
             
-            <div class="col-xs-12 col-md-2 channel-list-wrapper">
-                <div class="channel-search-box-premium">
-                    <input type="text" id="channelSearch" placeholder="Search channel..." autocomplete="off">
-                    <span class="search-icon-inside">
-                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    </span>
-                </div>
+            <!-- 📺 ডানপাশের চ্যানেল লিস্ট এরিয়া -->
+            <div class="col-xs-12 col-md-2 channel-list">
 
+                <!-- 🏷️ ছোট ক্যাটাগরি ফিল্টার বাটনসমূহ -->
                 <div class="category-container-premium" id="category-filter-box">
                     <button class="cat-btn-premium active" onclick="filterByCategory('All', this)">All</button>
                     <button class="cat-btn-premium" onclick="filterByCategory('Sports', this)">Sports</button>
                     <button class="cat-btn-premium" onclick="filterByCategory('News', this)">News</button>
-                    <button class="cat-btn-premium" onclick="filterByCategory('Entertainment', this)">Entertainment</button>
+                    <button class="cat-btn-premium" onclick="filterByCategory('Entertainment', this)">Entertain...</button>
                     <button class="cat-btn-premium" onclick="filterByCategory('Movies', this)">Movies</button>
                 </div>
 
-                <div class="channel-list" id="scroll-wrapper">
+                <!-- 📋 স্ক্রোল লিস্ট কন্টেইনার (লকিং ও জাম্প প্রটেক্টেড) -->
+                <div id="scroll-wrapper">
                     <ul class="thumbnail-slider" id="channel-container"></ul>
                 </div>
+                
             </div>
         </div>
     </div>
@@ -573,13 +594,14 @@
             }, 1200); 
         });
 
-        // 🔍 ক্যাটাগরি ও সার্চ একসাথে মিলিয়ে লাইভ ফিল্টার করার গ্লোবাল লজিক
+        // 🔍 ক্যাটাগরি ও সার্চ ফিল্টার করার আল্ট্রা-স্মুথ মেকানিজম (জিরো ঝাঁকি প্রোটেকশন)
         let currentSelectedCategory = 'All';
 
         function applyInstantChannelFilter() {
             const searchInput = document.getElementById('channelSearch');
             if (!searchInput) return;
 
+            // কারেন্ট স্ক্রোল ট্র্যাকিং লক রাখা হলো যেন এক পিক্সেলও পেজ না লাফায়
             const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
             const scrollY = window.pageYOffset || document.documentElement.scrollTop;
 
@@ -589,20 +611,21 @@
             
             let li = ul.getElementsByTagName('li');
             
+            // ਰেন্ডারিং ব্যাচ প্রসেস (DOM layout thrashing প্রতিরোধক)
             for (let i = 0; i < li.length; i++) {
                 let textValue = li[i].textContent || li[i].innerText;
-                // script.js থেকে জেনারেট হওয়া li-তে ডাটা ক্যাটাগরি রিড করা হচ্ছে
                 let chCategory = li[i].getAttribute('data-category') || 'All';
 
                 let matchSearch = textValue.toUpperCase().indexOf(filter) > -1;
                 let matchCategory = (currentSelectedCategory === 'All' || chCategory.toUpperCase() === currentSelectedCategory.toUpperCase());
 
                 if (matchSearch && matchCategory) {
-                    li[i].style.display = ''; 
+                    if(li[i].style.display !== '') li[i].style.display = ''; 
                 } else {
-                    li[i].style.display = 'none'; 
+                    if(li[i].style.display !== 'none') li[i].style.display = 'none'; 
                 }
             }
+            // স্ক্রোল লক রি-এনফোর্সড 
             window.scrollTo(scrollX, scrollY);
         }
 
@@ -610,12 +633,10 @@
         function filterByCategory(categoryName, buttonElement) {
             currentSelectedCategory = categoryName;
             
-            // একটিভ বাটন স্টাইল চেঞ্জ
             const buttons = document.querySelectorAll('.cat-btn-premium');
             buttons.forEach(btn => btn.classList.remove('active'));
             buttonElement.classList.add('active');
 
-            // ফিল্টার মেকানিজম রান করা
             applyInstantChannelFilter();
         }
 
@@ -680,4 +701,4 @@
         }, true); 
     </script>
 </body>
-                </html>
+</html>

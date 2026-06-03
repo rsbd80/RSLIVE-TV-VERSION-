@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const container = document.getElementById('channel-container');
+    const searchInput = document.getElementById('channelSearch');
 
     fetch('playlist.json?t=' + Date.now())
         .then(response => response.json())
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
 
-                // 🎯 আপনার ওরিজিনাল ব্যাকআপের ক্লিক লজিক (কোনো পরিবর্তন নেই)
+                // 🎯 ক্লিক লজিক
                 li.addEventListener('click', function() {
                     if (window.frames['player']) {
                         window.frames['player'].location.href = channel.url;
@@ -32,6 +33,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 container.appendChild(li);
             });
+
+            // 🔍 ইনস্ট্যান্ট লাইভ চ্যানেল ফিল্টার সার্চ লজিক
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const filterValue = this.value.toLowerCase().trim();
+                    const channelItems = container.querySelectorAll('li');
+
+                    channelItems.forEach(item => {
+                        const channelTitle = item.querySelector('.channel-title').textContent.toLowerCase();
+                        if (channelTitle.includes(filterValue)) {
+                            item.style.display = ""; // মিললে দেখাবে
+                        } else {
+                            item.style.display = "none"; // না মিললে হাইড হবে
+                        }
+                    });
+                });
+            }
 
             // প্লেলিস্ট লোড সম্পন্ন হলে টিভি ফোকাস সচল হবে
             if (typeof initTVFocus === 'function') {

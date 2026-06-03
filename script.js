@@ -1,59 +1,59 @@
-// 📥 playlist.json থেকে ডাটা ফেচ করে চ্যানেল তৈরি করার স্ক্রিপ্ট
-document.addEventListener("DOMContentLoaded", function () {
-    const channelContainer = document.getElementById("channel-container");
+// 📋 চ্যানেল ডাটাবেস (আপনার প্রয়োজন অনুযায়ী চ্যানেল অ্যাড বা এডিট করতে পারবেন)
+const channels = [
+    { name: "Sony Sports 1", category: "Sports", id: "sony_sports_1", src: "https://example.com/stream1" },
+    { name: "Star Sports HD", category: "Sports", id: "star_sports", src: "https://example.com/stream2" },
+    { name: "Somoy TV", category: "News", id: "somoy_tv", src: "https://example.com/stream3" },
+    { name: "Jamuna TV", category: "News", id: "jamuna_tv", src: "https://example.com/stream4" },
+    { name: "Zee Bangla", category: "Entertainment", id: "zee_bangla", src: "https://example.com/stream5" },
+    { name: "Star Jalsha", category: "Entertainment", id: "star_jalsha", src: "https://example.com/stream6" },
+    { name: "HBO HD", category: "Movies", id: "hbo", src: "https://example.com/stream7" },
+    { name: "Sony Pix", category: "Movies", id: "sony_pix", src: "https://example.com/stream8" }
+];
 
-    // প্লেলিস্ট ডট জেফন ফাইল রিড করা
-    fetch("playlist.json")
-        .then(response => response.json())
-        .then(data => {
-            channelContainer.innerHTML = ""; // আগের ডামি কন্টেন্ট ক্লিয়ার
-
-            data.forEach((channel, index) => {
-                const li = document.createElement("li");
-                
-                // 🎮 স্মার্ট টিভির জন্য ফোকাস ট্যাব ইনডেক্স
-                li.tabIndex = 0; 
-                
-                // 🏷️ ক্যাটাগরি ফিল্টার করার জন্য ডাটা এট্রিবিউট সেট (সবচেয়ে গুরুত্বপূর্ণ লাইন)
-                const channelCategory = channel.category ? channel.category : "All";
-                li.setAttribute("data-category", channelCategory);
-
-                // প্রথম চ্যানেলটিকে বাই-ডিফল্ট একটিভ ক্লাস দেওয়া
-                if (index === 0) {
-                    li.className = "active";
-                }
-
-                // চ্যানেল কার্ডের ডিজাইন লেআউট জেনারেশন
-                li.innerHTML = `
-                    <div class="channel-card-wrapper">
-                        <img src="${channel.image}" alt="${channel.name}" onerror="this.src='https://i.postimg.cc/mD1VCt2C/RS-Live.png'">
-                        <div class="channel-details">
-                            <span class="ch-name">${channel.name}</span>
-                            <span class="ch-cat-badge">${channelCategory}</span>
-                        </div>
-                    </div>
-                `;
-
-                // চ্যানেল কার্ডে ক্লিক করলে প্লেয়ার আইফ্রেমে সোর্স চেঞ্জ হওয়া
-                li.addEventListener("click", function () {
-                    // একটিভ ক্লাস অদলবদল
-                    document.querySelectorAll("#channel-container li").forEach(item => item.classList.remove("active"));
-                    li.classList.add("active");
-
-                    // আইফ্রেম প্লেয়ার আপডেট
-                    const playerIframe = document.getElementById("tv-player-iframe");
-                    if (playerIframe) {
-                        playerIframe.src = channel.url;
-                    }
-                });
-
-                channelContainer.appendChild(li);
-            });
-
-            // চ্যানেল লোড শেষ হওয়ার পর যদি ক্যাটাগরি স্ক্রিপ্ট থাকে তবে তা ইনিশিয়াল সিঙ্ক করা
-            if (typeof applyInstantChannelFilter === "function") {
-                applyInstantChannelFilter();
-            }
-        })
-        .catch(error => console.error("Error loading playlist:", error));
+// 🚀 পেজ লোড হওয়ার সাথে সাথে চ্যানেল লিস্ট জেনারেট করা
+document.addEventListener("DOMContentLoaded", () => {
+    generateChannelList(channels);
 });
+
+// 📺 চ্যানেল লিস্ট ডাইনামিকালি তৈরি করার ফাংশন (যা ঝাঁকি বা লাফালাফি প্রতিরোধ করে)
+function generateChannelList(channelArray) {
+    const container = document.getElementById("channel-container");
+    if (!container) return;
+
+    container.innerHTML = ""; // আগের লিস্ট ক্লিয়ার করা
+
+    channelArray.forEach((channel) => {
+        const li = document.createElement("li");
+        li.setAttribute("data-category", channel.category);
+        li.setAttribute("tabindex", "0"); // রিমোট বা কিবোর্ড নেভিগেশনের জন্য
+        
+        // লিস্টের ভেতরের ডিজাইন (আপনার স্টাইল অনুযায়ী পরিবর্তন করতে পারেন)
+        li.innerHTML = `
+            <div class="channel-card-item" onclick="playChannel('${channel.src}')">
+                <span class="channel-name-text">${channel.name}</span>
+                <span class="badge-category">${channel.category}</span>
+            </div>
+        `;
+        
+        container.appendChild(li);
+    });
+}
+
+// 🎬 ভিডিও প্লেয়ারে চ্যানেল প্লে করার আল্ট্রা-স্মুথ ফাংশন
+function playChannel(streamUrl) {
+    const iframe = document.getElementById("tv-player-iframe");
+    if (!iframe) return;
+
+    // 🔒 প্লেয়ারে ক্লিক করার সময় পেজ যাতে স্ক্রোল ডাউন বা লাফালাফি না করে তার লক মেকানিজম
+    const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+
+    // আপনার মেইন স্ট্রিম লিঙ্কের সাথে প্লেয়ার আইফ্রেম কানেক্ট করা
+    // (এখানে channel.html এর সাথে সোর্স পাস করা হচ্ছে, আপনার সিস্টেমে সরাসরি লিঙ্ক হলে src = streamUrl দিতে পারেন)
+    iframe.src = `channel.html?id=${encodeURIComponent(streamUrl)}`;
+
+    // ক্লিক করার পর স্ক্রোল পজিশন আগের জায়গায় লক করে রাখা (জিরো ঝাঁকি)
+    setTimeout(() => {
+        window.scrollTo(scrollX, scrollY);
+    }, 0);
+}

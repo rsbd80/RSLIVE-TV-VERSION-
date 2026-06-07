@@ -1,74 +1,24 @@
-[
-  {
-    "name": "Sony Sports Ten 1 HD",
-    "image": "https://i.postimg.cc/mD1VCt2C/RS-Live.png",
-    "url": "channel.html",
-    "category": "Sports"
-  },
-  {
-    "name": "Sony Sports Ten 2 HD",
-    "image": "https://i.postimg.cc/mD1VCt2C/RS-Live.png",
-    "url": "channel.html",
-    "category": "Sports"
-  },
-  {
-    "name": "Star Sports 1 Hindi",
-    "image": "https://i.postimg.cc/mD1VCt2C/RS-Live.png",
-    "url": "channel.html",
-    "category": "Sports"
-  },
-  {
-    "name": "Somoy TV",
-    "image": "https://i.postimg.cc/mD1VCt2C/RS-Live.png",
-    "url": "channel.html",
-    "category": "News"
-  },
-  {
-    "name": "Jamuna TV",
-    "image": "https://i.postimg.cc/mD1VCt2C/RS-Live.png",
-    "url": "channel.html",
-    "category": "News"
-  },
-  {
-    "name": "Independent TV",
-    "image": "https://i.postimg.cc/mD1VCt2C/RS-Live.png",
-    "url": "channel.html",
-    "category": "News"
-  },
-  {
-    "name": "Star Jalsha HD",
-    "image": "https://i.postimg.cc/mD1VCt2C/RS-Live.png",
-    "url": "channel.html",
-    "category": "Entertainment"
-  },
-  {
-    "name": "Zee Bangla HD",
-    "image": "https://i.postimg.cc/mD1VCt2C/RS-Live.png",
-    "url": "channel.html",
-    "category": "Entertainment"
-  },
-  {
-    "name": "Sony Aath",
-    "image": "https://i.postimg.cc/mD1VCt2C/RS-Live.png",
-    "url": "channel.html",
-    "category": "Entertainment"
-  },
-  {
-    "name": "Sony MAX HD",
-    "image": "https://i.postimg.cc/mD1VCt2C/RS-Live.png",
-    "url": "channel.html",
-    "category": "Movies"
-  },
-  {
-    "name": "Zee Cinema HD",
-    "image": "https://i.postimg.cc/mD1VCt2C/RS-Live.png",
-    "url": "channel.html",
-    "category": "Movies"
-  },
-  {
-    "name": "Star Gold HD",
-    "image": "https://i.postimg.cc/mD1VCt2C/RS-Live.png",
-    "url": "channel.html",
-    "category": "Movies"
-  }
-]
+const channels = [
+
+{
+name:"T Sports",
+logo:"https://i.imgur.com/3ZQ3Z5G.png",
+category:"Sports",
+url:"https://example.com/stream.m3u8"
+},
+
+{
+name:"GTV",
+logo:"https://i.imgur.com/3ZQ3Z5G.png",
+category:"Bangladesh",
+url:"https://example.com/stream.m3u8"
+},
+
+{
+name:"Sony Sports",
+logo:"https://i.imgur.com/3ZQ3Z5G.png",
+category:"Sports",
+url:"https://example.com/stream.m3u8"
+}
+
+];

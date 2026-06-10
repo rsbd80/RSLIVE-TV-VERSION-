@@ -1,83 +1,27 @@
-const container =
-document.getElementById("channel-container");
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('channel-container');
 
-function renderChannels(list){
-
-container.innerHTML="";
-
-list.forEach(channel=>{
-
-const li =
-document.createElement("li");
-
-li.dataset.category =
-channel.category;
-
-li.innerHTML=`
-<img
-src="${channel.logo}"
-class="channel-logo">
-
-<span>${channel.name}</span>
-`;
-
-li.onclick=()=>{
-
-document
-.querySelectorAll("#channel-container li")
-.forEach(i=>i.classList.remove("channel-active"));
-
-li.classList.add("channel-active");
-
-document
-.getElementById("tv-player-iframe")
-.src=
-`channel.html?url=${encodeURIComponent(channel.url)}`;
-
-};
-
-container.appendChild(li);
-
+    // JSON ফাইল থেকে চ্যানেল লোড করা
+    fetch('playlist.json')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(channel => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <a href="javascript:void(0);" onclick="player.location.href='${channel.url}'">
+                        <img src="${channel.image}" alt="${channel.name}">
+                    </a>
+                `;
+                container.appendChild(li);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading playlist:', error);
+            container.innerHTML = '<p style="color:red; font-size:10px;">Error!</p>';
+        });
 });
 
+// রাইট ক্লিক বন্ধ করার ফাংশন (ঐচ্ছিক)
+function disableClick() {
+    document.oncontextmenu = function() { return false; };
 }
-
-renderChannels(channels);
-
-function filterCategory(category,btn){
-
-document
-.querySelectorAll(".category-bar button")
-.forEach(b=>b.classList.remove("active"));
-
-btn.classList.add("active");
-
-const filtered=
-category==="All"
-? channels
-: channels.filter(
-c=>c.category===category
-);
-
-renderChannels(filtered);
-
-}
-
-document
-.getElementById("channelSearch")
-.addEventListener("input",function(){
-
-const value=
-this.value.toLowerCase();
-
-renderChannels(
-
-channels.filter(c=>
-c.name
-.toLowerCase()
-.includes(value)
-)
-
-);
-
-});

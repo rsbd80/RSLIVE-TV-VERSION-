@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Player</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Rubel Live TV - Universal Player</title>
 
 <script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
 <script>
@@ -12,78 +12,81 @@ jwplayer.key="Khpp2dHxlBJHC8MCmLnBuV2jK/DwDnJMniwF6EO9HC/riJ712ZmbHg==";
 
 <style>
 *{ margin:0; padding:0; box-sizing:border-box; }
-html,body{ width:100%; height:100%; background:#000; overflow:hidden; font-family:sans-serif; -webkit-user-select: none; user-select: none; }
-#player{ width:100% !important; height:100% !important; position: absolute; top: 0; left: 0; }
-#loader { position:fixed; top:0; left:0; width:100%; height:100%; background:#000; display:flex; justify-content:center; align-items:center; z-index:9999; flex-direction:column; transition: opacity 0.3s ease; }
-.spinner { width: 50px; height: 50px; border: 3px solid rgba(255, 255, 255, 0.1); border-radius: 50%; border-top-color: #fff; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-#loader p { margin-top: 15px; color: #eee; font-size: 15px; }
-.jwplayer { height:100% !important; width:100% !important; }
-.jw-video { object-fit: fill !important; width: 100vw !important; height: 100vh !important; }
+html,body{ width:100%; height:100%; background:#000; overflow:hidden; font-family:Arial,sans-serif; }
+
+#player-container, #iframe-container {
+    width:100%; height:100%; position: absolute; top:0; left:0;
+}
+
+#iframe-container iframe {
+    width: 100%; height: 100%; border: none;
+}
+
+#loader {
+    position:fixed; top:0; left:0; width:100%; height:100%; background:#000;
+    display:flex; justify-content:center; align-items:center; z-index:9999; flex-direction:column;
+}
+
+.spinner {
+    width:60px; height:60px; border:5px solid rgba(255,255,255,.15);
+    border-top:5px solid #00c3ff; border-radius:50%; animation:spin 1s linear infinite;
+}
+
+@keyframes spin { 100%{transform:rotate(360deg);} }
+#loader p { margin-top:15px; color:#fff; font-size:18px; }
 </style>
 </head>
 <body>
 
 <div id="loader">
-<div class="spinner"></div>
-<p id="loader-text">Loading Stream...</p>
+    <div class="spinner"></div>
+    <p>Loading Stream...</p>
 </div>
 
-<div id="player"></div>
+<div id="player-container">
+    <div id="player"></div>
+</div>
+
+<div id="iframe-container" style="display:none;"></div>
 
 <script>
-// আইফ্রেম প্রোটেকশন
-if (window.self === window.top) { window.location.href = "index.html"; }
-document.addEventListener('contextmenu', event => event.preventDefault());
+// আপনার ভিডিও বা আইফ্রেম লিঙ্কটি এখানে দিন
+const streamUrl = "https://taimoor.pro.bd/live/otvs/playex.php?id=167590";
 
-// মেইন পেজ থেকে আসা ইউআরএল সঠিকভাবে রিড করার ফাংশন
-function getStreamUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const rawUrl = urlParams.get('url');
-    if (rawUrl) {
-        return decodeURIComponent(rawUrl);
-    }
-    return null;
-}
+// চেক করা হচ্ছে এটা কি সরাসরি ভিডিও ফাইল নাকি আইফ্রেম লিঙ্ক
+const isIframe = streamUrl.includes("playex.php") || streamUrl.includes("embed") || !streamUrl.includes(".m3u8");
 
-const streamUrl = getStreamUrl();
-const player = jwplayer("player");
+if (isIframe) {
+    // আইফ্রেম মোড
+    const loader = document.getElementById("loader");
+    const iframeContainer = document.getElementById("iframe-container");
+    const playerContainer = document.getElementById("player-container");
 
-// ব্যাকআপ লিঙ্ক যদি কোনো লিঙ্ক না পাওয়া যায়
-const defaultStream = "https://cdn.jsdelivr.net/gh/nurmd2006/empty@main/stream/by/your-abbu/srktv.m3u8";
-const finalStream = streamUrl ? streamUrl : defaultStream;
+    playerContainer.style.display = "none";
+    iframeContainer.style.display = "block";
+    
+    iframeContainer.innerHTML = `<iframe src="${streamUrl}" allowfullscreen allow="autoplay; encrypted-media" scrolling="no"></iframe>`;
+    
+    // আইফ্রেম লোড হয়ে গেলে লোডার সরিয়ে দিন
+    setTimeout(() => {
+        loader.style.display = "none";
+    }, 2000);
 
-player.setup({
-    playlist:[{ sources:[{ file: finalStream, type: "hls" }] }],
-    width:"100%",
-    height:"100%",
-    autostart:true,
-    controls:true,
-    stretching:"fill"
-});
+} else {
+    // JW Player মোড (সরাসরি m3u8 লিঙ্কের জন্য)
+    const player = jwplayer("player");
+    player.setup({
+        playlist:[{
+            sources:[{ file: streamUrl, type: "hls", label: "HD" }]
+        }],
+        width:"100%", height:"100%", autostart:true, mute:false, stretching:"uniform", controls:true
+    });
 
-// ফুলস্ক্রিন ও রোটেশন লজিক
-player.on("fullscreen", function(event){
-    if(event.fullscreen) {
-        if (screen.orientation && screen.orientation.lock) {
-            screen.orientation.lock("landscape").catch(function(e){});
-        }
-        setTimeout(() => {
-            const videoEl = document.querySelector('.jw-video');
-            if(videoEl) videoEl.style.setProperty('object-fit', 'fill', 'important');
-        }, 100);
-    }
-});
-
-player.on("ready", function(){ fadeAndHideLoader(); });
-player.on("play", function(){ fadeAndHideLoader(); });
-player.on("buffer", function(){ document.getElementById("loader").style.display="flex"; document.getElementById("loader-text").innerText = "Buffering..."; });
-player.on("error", function(){ document.getElementById("loader").style.display="flex"; document.getElementById("loader-text").innerHTML = "<span style='color:red;'>Stream Failed!</span>"; });
-
-function fadeAndHideLoader() {
-    document.getElementById("loader").style.opacity="0";
-    setTimeout(() => { document.getElementById("loader").style.display="none"; }, 300);
+    player.on("ready", () => document.getElementById("loader").style.display="none");
+    player.on("play", () => document.getElementById("loader").style.display="none");
+    player.on("error", () => document.getElementById("loader").innerHTML="<p style='color:white'>Stream Failed</p>");
 }
 </script>
+
 </body>
 </html>

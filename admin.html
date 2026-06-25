@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <title>RS Live TV – অ্যাডমিন প্যানেল</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a12;
+      color: #f0f0f5;
+      min-height: 100vh;
+      background-image: radial-gradient(ellipse at 30% 20%, #14142a 0%, #0a0a12 80%);
+    }
+    ::-webkit-scrollbar { width:4px; height:4px; }
+    ::-webkit-scrollbar-thumb { background: #6c5ce7; border-radius:20px; }
+
+    /* ===== লগইন ===== */
+    .login-wrap {
+      max-width: 400px; margin: 80px auto; background: #161625;
+      padding: 40px 30px; border-radius: 20px; border: 1px solid #2a2a44;
+    }
+    .login-wrap h2 { text-align:center; margin-bottom:20px; font-weight:800; }
+    .login-wrap input {
+      width:100%; padding:12px 16px; margin-bottom:12px; border-radius:10px;
+      border:1px solid #2a2a44; background:#0a0a12; color:#fff; font-size:14px;
+      outline:none;
+    }
+    .login-wrap input:focus { border-color:#6c5ce7; }
+    .login-wrap button {
+      width:100%; padding:12px; background:#6c5ce7; border:none; border-radius:10px;
+      color:#fff; font-weight:700; font-size:16px; cursor:pointer;
+    }
+    .login-wrap button:hover { background:#7c6df0; }
+    .login-wrap .error { color:#ef4444; font-size:14px; margin-bottom:10px; text-align:center; }
+
+    /* ===== ড্যাশবোর্ড ===== */
+    .dashboard { display:none; padding:20px 24px; max-width:1280px; margin:0 auto; }
+    .dash-header {
+      display:flex; justify-content:space-between; align-items:center;
+      flex-wrap:wrap; gap:12px; padding-bottom:16px; border-bottom:1px solid #2a2a44;
+      margin-bottom:20px;
+    }
+    .dash-header h1 { font-size:24px; font-weight:800; }
+    .dash-header .user { display:flex; align-items:center; gap:12px; }
+    .dash-header .user button {
+      background:#2a2a44; border:none; color:#fff; padding:6px 16px;
+      border-radius:8px; cursor:pointer; font-weight:600;
+    }
+    .dash-header .user button:hover { background:#3a3a5a; }
+
+    .stats {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+      gap:16px; margin-bottom:24px;
+    }
+    .stat-card {
+      background:#161625; border:1px solid #2a2a44; border-radius:14px;
+      padding:16px 20px;
+    }
+    .stat-card .num { font-size:28px; font-weight:800; }
+    .stat-card .label { color:#888; font-size:13px; }
+
+    .actions {
+      display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;
+    }
+    .actions button {
+      background:#2a2a44; border:1px solid #2a2a44; color:#fff;
+      padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:600;
+      display:flex; align-items:center; gap:8px; transition:0.2s;
+    }
+    .actions button:hover { border-color:#6c5ce7; }
+    .actions .primary { background:#6c5ce7; border-color:#6c5ce7; }
+    .actions .primary:hover { background:#7c6df0; }
+    .actions .danger { background:#ef4444; border-color:#ef4444; }
+    .actions .danger:hover { background:#dc2626; }
+
+    .table-wrap {
+      background:#161625; border:1px solid #2a2a44; border-radius:14px;
+      overflow:auto; padding:10px;
+    }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th { text-align:left; padding:10px; color:#888; border-bottom:1px solid #2a2a44; font-weight:600; }
+    td { padding:10px; border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; }
+    td .actions { display:flex; gap:4px; margin:0; }
+    td .actions button {
+      background:none; border:none; color:#888; cursor:pointer;
+      padding:4px 6px; border-radius:6px; font-size:14px;
+    }
+    td .actions button:hover { background:#0a0a12; color:#fff; }
+    td .actions .del:hover { color:#ef4444; }
+
+    /* ===== মডাল ===== */
+    .modal-overlay {
+      display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7);
+      backdrop-filter:blur(6px); z-index:200; align-items:center; justify-content:center;
+      padding:20px;
+    }
+    .modal-overlay.open { display:flex; }
+    .modal-box {
+      background:#161625; border:1px solid #2a2a44; border-radius:16px;
+      padding:28px; max-width:520px; width:100%; max-height:90vh; overflow-y:auto;
+    }
+    .modal-box h3 { margin-bottom:4px; font-weight:800; }
+    .modal-box .sub { color:#888; font-size:14px; margin-bottom:16px; }
+    .modal-box .form-group { margin-bottom:14px; }
+    .modal-box .form-group label {
+      display:block; font-size:13px; font-weight:500; color:#888; margin-bottom:4px;
+    }
+    .modal-box .form-group input,
+    .modal-box .form-group select,
+    .modal-box .form-group textarea {
+      width:100%; padding:10px 14px; border-radius:8px; border:1px solid #2a2a44;
+      background:#0a0a12; color:#fff; font-size:14px; outline:none;
+    }
+    .modal-box .form-group input:focus,
+    .modal-box .form-group select:focus { border-color:#6c5ce7; }
+    .modal-box .form-group textarea { resize:vertical; min-height:50px; }
+    .modal-box .modal-actions {
+      display:flex; gap:10px; justify-content:flex-end; margin-top:18px;
+    }
+    .modal-box .modal-actions button {
+      padding:8px 24px; border-radius:8px; border:none; font-weight:600; cursor:pointer;
+    }
+    .modal-box .modal-actions .cancel {
+      background:#2a2a44; color:#fff;
+    }
+    .modal-box .modal-actions .save {
+      background:#6c5ce7; color:#fff;
+    }
+    .modal-box .modal-actions .save:hover { background:#7c6df0; }
+    .modal-box .modal-actions .delete {
+      background:#ef4444; color:#fff;
+    }
+    .modal-box .modal-actions .delete:hover { background:#dc2626; }
+
+    /* ===== টোস্ট ===== */
+    .toast-container {
+      position:fixed; bottom:24px; right:24px; z-index:999;
+      display:flex; flex-direction:column; gap:8px; max-width:340px; width:100%;
+    }
+    .toast {
+      background:#161625; border:1px solid #2a2a44; padding:14px 20px;
+      border-radius:12px; display:flex; align-items:center; gap:12px;
+      font-size:14px; font-weight:500; box-shadow:0 12px 40px rgba(0,0,0,0.6);
+      animation: slideUp 0.3s ease;
+    }
+    .toast i { color:#6c5ce7; font-size:18px; }
+    @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ===== স্মল স্ক্রিন ===== */
+    @media (max-width:600px) {
+      .dashboard { padding:12px; }
+      .stats { grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== লগইন ===== -->
+  <div class="login-wrap" id="loginWrap">
+    <h2><i class="fas fa-lock" style="color:#6c5ce7;"></i> Admin Login</h2>
+    <div class="error" id="loginError"></div>
+    <input type="email" id="loginEmail" placeholder="Email" value="admin@rs.com" />
+    <input type="password" id="loginPass" placeholder="Password" value="123456" />
+    <button id="loginBtn">Login</button>
+    <p style="text-align:center;margin-top:12px;color:#888;font-size:13px;">Default: admin@rs.com / 123456</p>
+  </div>
+
+  <!-- ===== ড্যাশবোর্ড ===== -->
+  <div class="dashboard" id="dashWrap">
+    <div class="dash-header">
+      <h1><i class="fas fa-tv" style="color:#6c5ce7;"></i> RS Live TV Admin</h1>
+      <div class="user">
+        <span id="adminEmail" style="color:#888;font-size:14px;"></span>
+        <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </div>
+
+    <div class="stats" id="statsWrap">
+      <div class="stat-card"><div class="num" id="totalChannels">0</div><div class="label">Total Channels</div></div>
+      <div class="stat-card"><div class="num" id="totalCats">0</div><div class="label">Categories</div></div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="addBtn"><i class="fas fa-plus"></i> Add Channel</button>
+      <button id="settingsBtn"><i class="fas fa-cog"></i> Settings</button>
+      <button id="refreshBtn"><i class="fas fa-sync"></i> Refresh</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Name</th><th>Category</th><th>Actions</th></tr></thead>
+        <tbody id="channelTableBody">
+          <tr><td colspan="4" style="text-align:center;color:#888;">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== মডাল ===== -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal-box">
+      <h3 id="modalTitle">Add Channel</h3>
+      <div class="sub" id="modalSub">Enter channel details</div>
+      <input type="hidden" id="editId" />
+
+      <div class="form-group"><label>Name *</label><input type="text" id="fName" placeholder="Channel name" /></div>
+      <div class="form-group"><label>Image URL</label><input type="text" id="fImage" placeholder="https://..." /></div>
+      <div class="form-group"><label>Stream URL (m3u8) *</label><input type="text" id="fUrl" placeholder="https://..." /></div>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="fCategory">
+          <option>General</option><option>Sports</option><option>News</option>
+          <option>Entertainment</option><option>Movies</option><option>Music</option>
+          <option>Religious</option><option>Kids</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Order (optional)</label><input type="number" id="fOrder" placeholder="0" value="0" /></div>
+
+      <div class="modal-actions">
+        <button class="cancel" id="modalCancel">Cancel</button>
+        <button class="delete" id="modalDelete" style="display:none;">Delete</button>
+        <button class="save" id="modalSave">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== সেটিংস মডাল ===== -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-box">
+      <h3>Settings</h3>
+      <div class="sub">Update app settings</div>
+      <div class="form-group"><label>Notice (marquee text)</label><textarea id="sNotice" rows="3" placeholder="Your notice here..."></textarea></div>
+      <div class="form-group"><label>Telegram Link</label><input type="text" id="sTelegram" placeholder="https://t.me/..." /></div>
+      <div class="form-group">
+        <label>Maintenance Mode</label>
+        <select id="sMaintenance"><option value="OFF">OFF</option><option value="ON">ON</option></select>
+      </div>
+      <div class="modal-actions">
+        <button class="cancel" id="settingsCancel">Cancel</button>
+        <button class="save" id="settingsSave">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== টোস্ট ===== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    // ================================================================
+    // FIREBASE CONFIG
+    // ================================================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyBW7EtBSaGq4BO4QuSy2unTJrMobQ3lIfU",
+      authDomain: "rs-tv-admin.firebaseapp.com",
+      databaseURL: "https://rs-tv-admin-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "rs-tv-admin",
+      storageBucket: "rs-tv-admin.firebasestorage.app",
+      messagingSenderId: "619060422153",
+      appId: "1:619060422153:android:610a287d0a0dae0299fad8"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // ================================================================
+    // DOM REFS
+    // ================================================================
+    const loginWrap = document.getElementById('loginWrap');
+    const dashWrap = document.getElementById('dashWrap');
+    const loginEmail = document.getElementById('loginEmail');
+    const loginPass = document.getElementById('loginPass');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginError = document.getElementById('loginError');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const adminEmail = document.getElementById('adminEmail');
+    const totalChannels = document.getElementById('totalChannels');
+    const totalCats = document.getElementById('totalCats');
+    const channelTableBody = document.getElementById('channelTableBody');
+    const addBtn = document.getElementById('addBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    // Modal
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalSub = document.getElementById('modalSub');
+    const editId = document.getElementById('editId');
+    const fName = document.getElementById('fName');
+    const fImage = document.getElementById('fImage');
+    const fUrl = document.getElementById('fUrl');
+    const fCategory = document.getElementById('fCategory');
+    const fOrder = document.getElementById('fOrder');
+    const modalCancel = document.getElementById('modalCancel');
+    const modalSave = document.getElementById('modalSave');
+    const modalDelete = document.getElementById('modalDelete');
+
+    // Settings Modal
+    const settingsModal = document.getElementById('settingsModal');
+    const sNotice = document.getElementById('sNotice');
+    const sTelegram = document.getElementById('sTelegram');
+    const sMaintenance = document.getElementById('sMaintenance');
+    const settingsCancel = document.getElementById('settingsCancel');
+    const settingsSave = document.getElementById('settingsSave');
+
+    let allChannels = [];
+
+    // ================================================================
+    // TOAST
+    // ================================================================
+    function toast(msg) {
+      const container = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.innerHTML = `<i class="fas fa-bolt"></i> ${msg}`;
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 3500);
+    }
+
+    // ================================================================
+    // AUTH
+    // ================================================================
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loginWrap.style.display = 'none';
+        dashWrap.style.display = 'block';
+        adminEmail.textContent = user.email;
+        loadAll();
+      } else {
+        loginWrap.style.display = 'block';
+        dashWrap.style.display = 'none';
+      }
+    });
+
+    loginBtn.onclick = () => {
+      loginError.textContent = '';
+      auth.signInWithEmailAndPassword(loginEmail.value, loginPass.value)
+        .catch(err => loginError.textContent = err.message);
+    };
+
+    logoutBtn.onclick = () => auth.signOut();
+
+    // ================================================================
+    // LOAD DATA
+    // ================================================================
+    function loadAll() {
+      loadChannels();
+      loadSettings();
+    }
+
+    function loadChannels() {
+      db.ref('channels').on('value', snap => {
+        const data = snap.val();
+        allChannels = data ? Object.keys(data).map(k => ({ id: k, ...data[k] })) : [];
+        renderTable();
+        updateStats();
+      });
+    }
+
+    function loadSettings() {
+      db.ref('settings').on('value', snap => {
+        const s = snap.val() || {};
+        sNotice.value = s.notice || '';
+        sTelegram.value = s.telegram || '';
+        sMaintenance.value = s.maintenance || 'OFF';
+      });
+    }
+
+    function updateStats() {
+      totalChannels.textContent = allChannels.length;
+      const cats = new Set();
+      allChannels.forEach(c => { if (c.category) cats.add(c.category); });
+      totalCats.textContent = cats.size;
+    }
+
+    function renderTable() {
+      if (!allChannels.length) {
+        channelTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#888;">No channels found</td></tr>`;
+        return;
+      }
+      // Sort by order or name
+      const sorted = [...allChannels].sort((a, b) => (a.order || 0) - (b.order || 0) || (a.name || '').localeCompare(b.name || ''));
+      let html = '';
+      sorted.forEach((ch, i) => {
+        html += `
+          <tr>
+            <td>${i+1}</td>
+            <td><strong>${ch.name}</strong></td>
+            <td>${ch.category || 'General'}</td>
+            <td class="actions">
+              <button class="edit" data-id="${ch.id}"><i class="fas fa-edit"></i></button>
+              <button class="del" data-id="${ch.id}"><i class="fas fa-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      });
+      channelTableBody.innerHTML = html;
+
+      // Edit
+      channelTableBody.querySelectorAll('.edit').forEach(btn => {
+        btn.onclick = () => {
+          const ch = allChannels.find(c => c.id === btn.dataset.id);
+          if (ch) openModal(ch);
+        };
+      });
+      // Delete
+      channelTableBody.querySelectorAll('.del').forEach(btn => {
+        btn.onclick = () => {
+          if (confirm('Delete this channel?')) {
+            db.ref('channels').child(btn.dataset.id).remove()
+              .then(() => toast('Channel deleted'));
+          }
+        };
+      });
+    }
+
+    // ================================================================
+    // MODAL (Channel)
+    // ================================================================
+    function openModal(channel = null) {
+      modalDelete.style.display = 'none';
+      if (channel) {
+        modalTitle.textContent = 'Edit Channel';
+        modalSub.textContent = 'Update channel details';
+        editId.value = channel.id;
+        fName.value = channel.name || '';
+        fImage.value = channel.image || '';
+        fUrl.value = channel.url || '';
+        fCategory.value = channel.category || 'General';
+        fOrder.value = channel.order || 0;
+        modalDelete.style.display = 'inline-block';
+      } else {
+        modalTitle.textContent = 'Add Channel';
+        modalSub.textContent = 'Enter new channel details';
+        editId.value = '';
+        fName.value = '';
+        fImage.value = '';
+        fUrl.value = '';
+        fCategory.value = 'General';
+        fOrder.value = 0;
+      }
+      modal.classList.add('open');
+    }
+
+    function closeModal() { modal.classList.remove('open'); }
+
+    modalCancel.onclick = closeModal;
+    window.onclick = (e) => { if (e.target === modal) closeModal(); };
+
+    modalSave.onclick = () => {
+      const name = fName.value.trim();
+      const url = fUrl.value.trim();
+      if (!name || !url) { toast('Name and URL required'); return; }
+
+      const data = {
+        name,
+        image: fImage.value.trim() || '',
+        url,
+        category: fCategory.value || 'General',
+        order: parseInt(fOrder.value) || 0
+      };
+
+      const id = editId.value;
+      if (id) {
+        db.ref('channels').child(id).update(data)
+          .then(() => { toast('Channel updated'); closeModal(); });
+      } else {
+        db.ref('channels').push(data)
+          .then(() => { toast('Channel added'); closeModal(); });
+      }
+    };
+
+    modalDelete.onclick = () => {
+      const id = editId.value;
+      if (id && confirm('Permanently delete?')) {
+        db.ref('channels').child(id).remove()
+          .then(() => { toast('Deleted'); closeModal(); });
+      }
+    };
+
+    addBtn.onclick = () => openModal(null);
+
+    // ================================================================
+    // SETTINGS MODAL
+    // ================================================================
+    settingsBtn.onclick = () => settingsModal.classList.add('open');
+    settingsCancel.onclick = () => settingsModal.classList.remove('open');
+    window.onclick = (e) => { if (e.target === settingsModal) settingsModal.classList.remove('open'); };
+
+    settingsSave.onclick = () => {
+      const data = {
+        notice: sNotice.value.trim(),
+        telegram: sTelegram.value.trim(),
+        maintenance: sMaintenance.value
+      };
+      db.ref('settings').update(data)
+        .then(() => { toast('Settings saved'); settingsModal.classList.remove('open'); });
+    };
+
+    refreshBtn.onclick = () => { loadAll(); toast('Refreshed'); };
+
+    // ================================================================
+    // INIT
+    // ================================================================
+    console.log('🔥 Admin Panel Loaded');
+  </script>
+</body>
+</html>

@@ -12,7 +12,7 @@ gtag('config','G-DRBZH98TKH');
 <title>RS Live TV</title>
 <link rel="shortcut icon" type="x-icon" href="https://i.postimg.cc/mD1VCt2C/RS-Live.png">
 <link href="bootstrap.min.css" rel="stylesheet">
-<link href="style.css?v=13.0" rel="stylesheet">
+<link href="style.css?v=14.0" rel="stylesheet">
 
 <!-- JW Player Script -->
 <script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
@@ -135,12 +135,10 @@ img,iframe,video,.embed-responsive-item{-webkit-user-drag:none;user-drag:none;po
 
     <div class="row">
         <div class="col-xs-12 col-md-10 tv-view">
-            <!-- সরাসরি JW Player (iFrame ছাড়া) -->
             <div id="direct-player"></div>
         </div>
         <div class="col-xs-12 col-md-2 channel-list" id="scroll-wrapper">
             <ul class="thumbnail-slider" id="channel-container">
-                <!-- লোডিং ইন্ডিকেটর -->
                 <li style="background:transparent;border:none;box-shadow:none;text-align:center;padding:20px 0;cursor:default;">
                     <div style="color:#666;font-size:14px;">⏳ চ্যানেল লোড হচ্ছে...</div>
                 </li>
@@ -158,7 +156,6 @@ img,iframe,video,.embed-responsive-item{-webkit-user-drag:none;user-drag:none;po
 <!-- ==================== FOOTER ==================== -->
 <footer class="footer-premium">
     <div class="container">
-
         <div class="tio-style-banner-fixed">
             <div class="banner-overlay"></div>
             <div class="content-wrapper">
@@ -224,26 +221,6 @@ document.addEventListener('DOMContentLoaded', function() {
         primary: "html5"
     });
 
-    // প্লেয়ার রেডি হলে লোডার হাইড
-    player.on("ready", function() {
-        var loader = document.getElementById('intro-loader');
-        if (loader) {
-            loader.style.opacity = '0';
-            loader.style.visibility = 'hidden';
-            setTimeout(function() { loader.style.display = 'none'; }, 500);
-        }
-    });
-
-    player.on("play", function() {
-        var loader = document.getElementById('intro-loader');
-        if (loader && loader.style.display !== 'none') {
-            loader.style.opacity = '0';
-            loader.style.visibility = 'hidden';
-            setTimeout(function() { loader.style.display = 'none'; }, 500);
-        }
-    });
-
-    // window.player গ্লোবালি এক্সেসের জন্য
     window.jwPlayerInstance = player;
 });
 </script>
@@ -291,7 +268,7 @@ function initTVFocus(){setTimeout(()=>{const firstChannel=document.querySelector
 initTVFocus();
 </script>
 
-<!-- ==================== JSONBin থেকে চ্যানেল লোড ==================== -->
+<!-- ==================== JSONBin থেকে চ্যানেল লোড (CORS ফিক্স সহ) ==================== -->
 <script>
 (function() {
     'use strict';
@@ -305,29 +282,46 @@ initTVFocus();
     const SETTINGS_BIN_ID = "6a4babc3f5f4af5e2966be9c";
 
     // ============================================================
-    //  📦 JSONBin.io থেকে ডেটা লোড
+    //  📦 JSONBin.io থেকে ডেটা লোড - একাধিক পদ্ধতি
     // ============================================================
     async function fetchFromJSONBin(binId) {
+        // পদ্ধতি 1: allorigins.win (সবচেয়ে ভালো কাজ করে)
         try {
-            const url = `https://api.allorigins.win/raw?url=https://api.jsonbin.io/v3/b/${binId}/latest`;
-            
-            const response = await fetch(url, {
-                headers: {
-                    'X-Master-Key': JSONBIN_API_KEY,
-                    'Content-Type': 'application/json'
-                }
+            const url1 = `https://api.allorigins.win/raw?url=https://api.jsonbin.io/v3/b/${binId}/latest`;
+            const response1 = await fetch(url1, {
+                headers: { 'X-Master-Key': JSONBIN_API_KEY }
             });
-
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+            if (response1.ok) {
+                const data = await response1.json();
+                return data.record || data;
             }
+        } catch(e) { console.log('Method 1 failed:', e); }
 
-            const data = await response.json();
-            return data.record || data;
-        } catch (error) {
-            console.error('Fetch error:', error);
-            return null;
-        }
+        // পদ্ধতি 2: JSONBin সরাসরি (CORS থাকতে পারে)
+        try {
+            const url2 = `https://api.jsonbin.io/v3/b/${binId}/latest`;
+            const response2 = await fetch(url2, {
+                headers: { 'X-Master-Key': JSONBIN_API_KEY }
+            });
+            if (response2.ok) {
+                const data = await response2.json();
+                return data.record || data;
+            }
+        } catch(e) { console.log('Method 2 failed:', e); }
+
+        // পদ্ধতি 3: corsproxy.io
+        try {
+            const url3 = `https://corsproxy.io/?https://api.jsonbin.io/v3/b/${binId}/latest`;
+            const response3 = await fetch(url3, {
+                headers: { 'X-Master-Key': JSONBIN_API_KEY }
+            });
+            if (response3.ok) {
+                const data = await response3.json();
+                return data.record || data;
+            }
+        } catch(e) { console.log('Method 3 failed:', e); }
+
+        return null;
     }
 
     // ============================================================
@@ -343,7 +337,7 @@ initTVFocus();
             container.innerHTML = `
                 <li style="background:transparent;border:none;box-shadow:none;text-align:center;padding:20px 0;cursor:default;">
                     <div style="color:#ff6b6b;font-size:14px;">😕 কোনো চ্যানেল পাওয়া যায়নি!</div>
-                    <div style="color:#666;font-size:11px;margin-top:5px;">দয়া করে কিছুক্ষণ পর আবার চেষ্টা করুন</div>
+                    <div style="color:#666;font-size:11px;margin-top:5px;">JSONBin-এ চ্যানেল যোগ করুন</div>
                 </li>
             `;
             return;
@@ -385,7 +379,6 @@ initTVFocus();
             container.appendChild(li);
         });
 
-        // সার্চ সেটআপ
         setupSearchFilter();
     }
 
@@ -413,7 +406,6 @@ initTVFocus();
             console.error('Player error:', error);
         }
 
-        // সার্চ ক্লিয়ার
         if (searchInput) {
             searchInput.value = '';
             filterChannels('');
@@ -449,13 +441,26 @@ initTVFocus();
     // ============================================================
     async function loadAllData() {
         try {
+            console.log('🔄 Loading channels from JSONBin...');
+
             // চ্যানেল লোড
             const channelsData = await fetchFromJSONBin(CHANNELS_BIN_ID);
-            const channels = channelsData?.channels || channelsData || [];
             
+            let channels = [];
+            let settings = {};
+
+            if (channelsData) {
+                channels = channelsData.channels || channelsData || [];
+                console.log('✅ Channels loaded:', channels.length);
+            } else {
+                console.warn('⚠️ No data from JSONBin');
+            }
+
             // সেটিংস লোড
             const settingsData = await fetchFromJSONBin(SETTINGS_BIN_ID);
-            const settings = settingsData?.settings || settingsData || {};
+            if (settingsData) {
+                settings = settingsData.settings || settingsData || {};
+            }
 
             // নোটিশ আপডেট
             const noticeBar = document.getElementById('noticeBar');
@@ -463,19 +468,19 @@ initTVFocus();
                 noticeBar.innerHTML = settings.notice;
             }
 
-            // টেলিগ্রাম লিংক আপডেট
+            // টেলিগ্রাম লিংক
             const telegramBtn = document.getElementById('telegramBtn');
             if (telegramBtn && settings.telegram) {
                 telegramBtn.href = settings.telegram;
             }
 
-            // মেইনটেইন্যান্স চেক
+            // মেইনটেইন্যান্স
             if (settings.maintenance === "ON") {
                 document.body.innerHTML = `
                     <div style="text-align:center; padding:100px 20px; color:white; background:#020617; min-height:100vh; font-family:sans-serif; display:flex; flex-direction:column; justify-content:center; align-items:center;">
                         <h1 style="font-size:32px; margin-bottom:15px; color:#f87171;">🛠️ সিস্টেম আপডেট চলছে...</h1>
-                        <p style="font-size:16px; color:#94a3b8; max-width:500px; margin-bottom:25px;">সাময়িকভাবে আমাদের সার্ভার মেইনটেইন্যান্স করা হচ্ছে। খুব দ্রুতই আমরা লাইভে ফিরবো।</p>
-                        ${settings.telegram ? `<a href="${settings.telegram}" target="_blank" style="background:#10b981; color:#020617; text-decoration:none; font-weight:bold; padding:12px 24px; border-radius:10px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);">আমাদের টেলিগ্রাম গ্রুপে জয়েন করুন</a>` : ''}
+                        <p style="font-size:16px; color:#94a3b8; max-width:500px; margin-bottom:25px;">সাময়িকভাবে আমাদের সার্ভার মেইনটেইন্যান্স করা হচ্ছে।</p>
+                        ${settings.telegram ? `<a href="${settings.telegram}" target="_blank" style="background:#10b981; color:#020617; text-decoration:none; font-weight:bold; padding:12px 24px; border-radius:10px;">টেলিগ্রামে জয়েন করুন</a>` : ''}
                     </div>
                 `;
                 return;
@@ -484,7 +489,7 @@ initTVFocus();
             // চ্যানেল রেন্ডার
             renderChannels(channels);
 
-            // টিভি ফোকাস
+            // TV ফোকাস
             setTimeout(() => {
                 const firstChannel = document.querySelector('#channel-container li[data-channel]');
                 if (firstChannel && document.activeElement !== searchInput) {
@@ -493,11 +498,12 @@ initTVFocus();
             }, 500);
 
         } catch (error) {
-            console.error('Error:', error);
+            console.error('❌ Error:', error);
             container.innerHTML = `
                 <li style="background:transparent;border:none;box-shadow:none;text-align:center;padding:20px 0;cursor:default;">
                     <div style="color:#ff6b6b;font-size:14px;">⚠️ চ্যানেল লোড করতে সমস্যা!</div>
                     <div style="color:#666;font-size:11px;margin-top:5px;">ইন্টারনেট কানেকশন চেক করুন</div>
+                    <div style="color:#444;font-size:10px;margin-top:8px;">${error.message}</div>
                 </li>
             `;
         }
@@ -513,7 +519,7 @@ initTVFocus();
         }
     }, 1500);
 
-    // ডেটা লোড শুরু
+    // ডেটা লোড
     loadAllData();
 
 })();

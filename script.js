@@ -12,32 +12,70 @@ document.addEventListener('DOMContentLoaded', function() {
     var SETTINGS_BIN_ID = "6a4babc3f5f4af5e2966be9c";
 
     // ============================================================
-    //  📦 JSONBin থেকে ডেটা লোড
+    //  📦 ব্যাকআপ চ্যানেল (JSONBin কাজ না করলে)
     // ============================================================
-    async function fetchFromJSONBin(binId) {
-        // পদ্ধতি 1: allorigins.win
-        try {
-            var url = 'https://api.allorigins.win/raw?url=https://api.jsonbin.io/v3/b/' + binId + '/latest';
-            var response = await fetch(url, {
-                headers: { 'X-Master-Key': JSONBIN_API_KEY }
-            });
-            if (response.ok) {
-                var data = await response.json();
-                return data.record || data;
-            }
-        } catch (e) { console.log('allorigins failed:', e); }
+    var BACKUP_CHANNELS = [
+        { name: "📺 Movie Bangladesh TV", url: "https://bestiptv.bestiptv-pro.workers.dev/?url=http://alvetv.com/moviebanglatv/8080/index.m3u8", image: "https://i.postimg.cc/mD1VCt2C/RS-Live.png", hidden: false },
+        { name: "📺 Somoy TV", url: "https://bestiptv.bestiptv-pro.workers.dev/?url=https://somoytv.com/live.m3u8", image: "https://i.postimg.cc/mD1VCt2C/RS-Live.png", hidden: false },
+        { name: "📺 Independent TV", url: "https://bestiptv.bestiptv-pro.workers.dev/?url=https://independent24.tv/live.m3u8", image: "https://i.postimg.cc/mD1VCt2C/RS-Live.png", hidden: false },
+        { name: "📺 Channel 24", url: "https://bestiptv.bestiptv-pro.workers.dev/?url=https://channel24.com/live.m3u8", image: "https://i.postimg.cc/mD1VCt2C/RS-Live.png", hidden: false },
+        { name: "📺 Bangla Vision", url: "https://bestiptv.bestiptv-pro.workers.dev/?url=https://banglavision.com/live.m3u8", image: "https://i.postimg.cc/mD1VCt2C/RS-Live.png", hidden: false }
+    ];
 
-        // পদ্ধতি 2: সরাসরি JSONBin
-        try {
-            var url2 = 'https://api.jsonbin.io/v3/b/' + binId + '/latest';
-            var response2 = await fetch(url2, {
-                headers: { 'X-Master-Key': JSONBIN_API_KEY }
-            });
-            if (response2.ok) {
-                var data2 = await response2.json();
-                return data2.record || data2;
+    // ============================================================
+    //  ⏱️ ফাস্ট JSONBin লোড (টাইমআউট সহ - ৪ সেকেন্ড)
+    // ============================================================
+    function fetchWithTimeout(url, options, timeout) {
+        timeout = timeout || 4000; // ৪ সেকেন্ড টাইমআউট
+        return Promise.race([
+            fetch(url, options),
+            new Promise(function(_, reject) {
+                setTimeout(function() {
+                    reject(new Error('⏱️ সময় শেষ!'));
+                }, timeout);
+            })
+        ]);
+    }
+
+    async function fetchFromJSONBin(binId) {
+        var methods = [
+            // পদ্ধতি 1: allorigins.win (দ্রুত)
+            async function() {
+                var url = 'https://api.allorigins.win/raw?url=https://api.jsonbin.io/v3/b/' + binId + '/latest';
+                var response = await fetchWithTimeout(url, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                }, 4000);
+                if (response.ok) {
+                    var data = await response.json();
+                    return data.record || data;
+                }
+                throw new Error('allorigins failed');
+            },
+            // পদ্ধতি 2: সরাসরি JSONBin
+            async function() {
+                var url = 'https://api.jsonbin.io/v3/b/' + binId + '/latest';
+                var response = await fetchWithTimeout(url, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                }, 4000);
+                if (response.ok) {
+                    var data = await response.json();
+                    return data.record || data;
+                }
+                throw new Error('direct failed');
             }
-        } catch (e) { console.log('direct failed:', e); }
+        ];
+
+        for (var i = 0; i < methods.length; i++) {
+            try {
+                var result = await methods[i]();
+                if (result) {
+                    console.log('✅ JSONBin loaded via method', i + 1);
+                    return result;
+                }
+            } catch (e) {
+                console.log('⚠️ Method', i + 1, 'failed:', e.message);
+            }
+        }
 
         return null;
     }
@@ -53,6 +91,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         console.log('📺 Loading:', name);
 
+        // লোডার দেখান
+        showLoader('📡 ' + name + ' লোড হচ্ছে...');
+
         try {
             var player = window.jwPlayerInstance || jwplayer("direct-player");
             if (player && typeof player.load === 'function') {
@@ -61,15 +102,69 @@ document.addEventListener('DOMContentLoaded', function() {
                     type: "hls"
                 });
                 player.play();
+
+                // ৩ সেকেন্ড পর লোডার হাইড
+                setTimeout(function() {
+                    hideLoader();
+                }, 3000);
             }
         } catch (error) {
             console.error('Player error:', error);
+            hideLoader();
         }
 
         if (searchInput) {
             searchInput.value = '';
             filterChannels('');
         }
+    }
+
+    // ============================================================
+    //  💬 লোডার কন্ট্রোল
+    // ============================================================
+    function showLoader(message) {
+        var loader = document.getElementById('intro-loader');
+        if (loader) {
+            var textEl = loader.querySelector('.welcome-text');
+            if (textEl) {
+                textEl.textContent = message || '⏳ লোড হচ্ছে...';
+                textEl.style.fontSize = '16px';
+                textEl.style.color = '#00f0ff';
+                textEl.style.letterSpacing = '1px';
+            }
+            var brandText = loader.querySelector('.brand-text');
+            if (brandText) {
+                brandText.style.display = 'none';
+            }
+            loader.style.display = 'flex';
+            loader.style.opacity = '1';
+            loader.style.visibility = 'visible';
+        }
+    }
+
+    function hideLoader() {
+        var loader = document.getElementById('intro-loader');
+        if (loader) {
+            loader.style.opacity = '0';
+            loader.style.visibility = 'hidden';
+            setTimeout(function() {
+                loader.style.display = 'none';
+            }, 500);
+        }
+    }
+
+    // ============================================================
+    //  📺 সুন্দর মেসেজ দেখানো
+    // ============================================================
+    function showMessage(icon, title, desc, color, subDesc) {
+        container.innerHTML = `
+            <li style="background:transparent;border:none;box-shadow:none;text-align:center;padding:30px 15px;cursor:default;display:block;width:100%;">
+                <div style="font-size:52px;margin-bottom:12px;display:block;">${icon}</div>
+                <div style="color:${color || '#ff6b6b'};font-size:16px;font-weight:700;margin-bottom:6px;">${title}</div>
+                <div style="color:#999;font-size:12px;max-width:220px;margin:0 auto;line-height:1.6;">${desc}</div>
+                ${subDesc ? '<div style="color:#666;font-size:11px;margin-top:8px;border-top:1px solid rgba(255,255,255,0.05);padding-top:8px;">'+subDesc+'</div>' : ''}
+            </li>
+        `;
     }
 
     // ============================================================
@@ -99,18 +194,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================================
     //  📺 চ্যানেল রেন্ডার
     // ============================================================
-    function renderChannels(channels) {
+    function renderChannels(channels, fromBackup) {
         if (!container) return;
 
         var visibleChannels = Array.isArray(channels) ? channels.filter(function(ch) { return ch.hidden !== true; }) : [];
 
         if (!visibleChannels || visibleChannels.length === 0) {
-            container.innerHTML = `
-                <li style="background:transparent;border:none;box-shadow:none;text-align:center;padding:20px 0;cursor:default;display:block;width:100%;">
-                    <div style="color:#ff6b6b;font-size:14px;">😕 কোনো চ্যানেল পাওয়া যায়নি!</div>
-                    <div style="color:#666;font-size:11px;margin-top:5px;">JSONBin-এ চ্যানেল যোগ করুন</div>
-                </li>
-            `;
+            showMessage(
+                '📭',
+                'কোনো চ্যানেল পাওয়া যায়নি!',
+                'JSONBin-এ চ্যানেল যোগ করুন অথবা কিছুক্ষণ পর আবার চেষ্টা করুন।',
+                '#ff6b6b',
+                '📌 চ্যানেল যোগ করতে টেলিগ্রামে মেসেজ দিন'
+            );
             return;
         }
 
@@ -150,6 +246,14 @@ document.addEventListener('DOMContentLoaded', function() {
             container.appendChild(li);
         });
 
+        // ব্যাকআপ থেকে দেখালে নোটিশ
+        if (fromBackup) {
+            var notice = document.createElement('li');
+            notice.style.cssText = 'background:rgba(255,170,0,0.08);border:1px solid rgba(255,170,0,0.25);border-radius:6px;text-align:center;padding:6px 10px;cursor:default;display:block;width:100%;margin-top:5px;';
+            notice.innerHTML = '<span style="color:#ffaa00;font-size:9px;">⚠️ JSONBin সংযোগ নেই, ব্যাকআপ চ্যানেল দেখানো হচ্ছে</span>';
+            container.prepend(notice);
+        }
+
         setupSearchFilter();
 
         setTimeout(function() {
@@ -164,70 +268,140 @@ document.addEventListener('DOMContentLoaded', function() {
     //  🚀 মেইন ফাংশন
     // ============================================================
     async function loadAllData() {
+        // লোডার দেখান
+        showLoader('⏳ চ্যানেল লোড হচ্ছে...');
+
         try {
             console.log('🔄 Loading channels from JSONBin...');
 
+            // চ্যানেল লোড (টাইমআউট সহ)
             var channelsData = await fetchFromJSONBin(CHANNELS_BIN_ID);
 
             var channels = [];
             var settings = {};
+            var fromBackup = false;
 
-            if (channelsData) {
-                channels = channelsData.channels || channelsData || [];
-                console.log('✅ Channels loaded:', channels.length);
+            if (channelsData && channelsData.channels && channelsData.channels.length > 0) {
+                channels = channelsData.channels || [];
+                console.log('✅ Channels loaded from JSONBin:', channels.length);
+            } else if (channelsData && Array.isArray(channelsData) && channelsData.length > 0) {
+                channels = channelsData;
+                console.log('✅ Channels loaded from JSONBin (array):', channels.length);
             } else {
-                console.warn('⚠️ No data from JSONBin');
+                console.warn('⚠️ JSONBin failed or empty, using backup channels');
+                channels = BACKUP_CHANNELS;
+                fromBackup = true;
             }
 
-            var settingsData = await fetchFromJSONBin(SETTINGS_BIN_ID);
-            if (settingsData) {
-                settings = settingsData.settings || settingsData || {};
+            // সেটিংস লোড
+            try {
+                var settingsData = await fetchFromJSONBin(SETTINGS_BIN_ID);
+                if (settingsData) {
+                    settings = settingsData.settings || settingsData || {};
+                }
+            } catch (e) {
+                console.log('⚠️ Settings load failed, using defaults');
             }
 
+            // নোটিশ আপডেট
             var noticeBar = document.getElementById('noticeBar');
-            if (noticeBar && settings.notice) {
-                noticeBar.innerHTML = settings.notice;
+            if (noticeBar) {
+                if (settings.notice) {
+                    noticeBar.innerHTML = settings.notice;
+                } else if (fromBackup) {
+                    noticeBar.innerHTML = '⚠️ JSONBin ডেটা লোড করতে সমস্যা, ব্যাকআপ চ্যানেল দেখানো হচ্ছে';
+                } else {
+                    noticeBar.innerHTML = '📢 সব চ্যানেল ফ্রিতে দেখুন! নতুন চ্যানেল যোগ করা হচ্ছে।';
+                }
             }
 
+            // টেলিগ্রাম লিংক
             var telegramBtn = document.getElementById('telegramBtn');
             if (telegramBtn && settings.telegram) {
                 telegramBtn.href = settings.telegram;
             }
 
+            // মেইনটেইন্যান্স চেক
             if (settings.maintenance === "ON") {
                 document.body.innerHTML = `
-                    <div style="text-align:center;padding:100px 20px;color:white;background:#020617;min-height:100vh;font-family:sans-serif;display:flex;flex-direction:column;justify-content:center;align-items:center;">
-                        <h1 style="font-size:32px;margin-bottom:15px;color:#f87171;">🛠️ সিস্টেম আপডেট চলছে...</h1>
-                        <p style="font-size:16px;color:#94a3b8;max-width:500px;margin-bottom:25px;">সাময়িকভাবে আমাদের সার্ভার মেইনটেইন্যান্স করা হচ্ছে।</p>
-                        ${settings.telegram ? '<a href="'+settings.telegram+'" target="_blank" style="background:#10b981;color:#020617;text-decoration:none;font-weight:bold;padding:12px 24px;border-radius:10px;">টেলিগ্রামে জয়েন করুন</a>' : ''}
+                    <div style="text-align:center;padding:80px 20px;color:white;background:radial-gradient(circle at center,#0f0f16 0,#040406 100%);min-height:100vh;font-family:sans-serif;display:flex;flex-direction:column;justify-content:center;align-items:center;">
+                        <div style="font-size:64px;margin-bottom:20px;">🔧</div>
+                        <h1 style="font-size:28px;margin-bottom:10px;color:#f87171;">সিস্টেম আপডেট চলছে...</h1>
+                        <p style="font-size:15px;color:#94a3b8;max-width:400px;margin-bottom:20px;line-height:1.6;">সাময়িকভাবে আমাদের সার্ভার মেইনটেইন্যান্স করা হচ্ছে। খুব দ্রুতই আমরা ফিরে আসবো।</p>
+                        ${settings.telegram ? '<a href="'+settings.telegram+'" target="_blank" style="background:linear-gradient(135deg,#00f0ff,#0072ff);color:#fff;text-decoration:none;font-weight:bold;padding:14px 32px;border-radius:10px;box-shadow:0 4px 20px rgba(0,240,255,0.3);">📱 টেলিগ্রামে জয়েন করুন</a>' : ''}
+                        <div style="margin-top:30px;color:#555;font-size:12px;">© 2026 RS LIVE TV</div>
                     </div>
                 `;
                 return;
             }
 
-            renderChannels(channels);
+            // চ্যানেল রেন্ডার
+            renderChannels(channels, fromBackup);
+
+            // লোডার হাইড
+            setTimeout(function() {
+                hideLoader();
+            }, 500);
 
         } catch (error) {
             console.error('❌ Error:', error);
-            container.innerHTML = `
-                <li style="background:transparent;border:none;box-shadow:none;text-align:center;padding:20px 0;cursor:default;display:block;width:100%;">
-                    <div style="color:#ff6b6b;font-size:14px;">⚠️ চ্যানেল লোড করতে সমস্যা!</div>
-                    <div style="color:#666;font-size:11px;margin-top:5px;">ইন্টারনেট কানেকশন চেক করুন</div>
-                </li>
-            `;
+            
+            // কানেকশন এরর চেক
+            if (error.message && error.message.includes('timeout')) {
+                showMessage(
+                    '⏱️',
+                    'সংযোগ করতে সময় বেশি লাগছে!',
+                    'আপনার ইন্টারনেট স্পিড কম থাকতে পারে। অনুগ্রহ করে অপেক্ষা করুন।',
+                    '#ffaa00',
+                    '🔄 স্বয়ংক্রিয়ভাবে ব্যাকআপ চ্যানেল দেখানো হচ্ছে...'
+                );
+            } else {
+                showMessage(
+                    '🌐',
+                    'ইন্টারনেট সংযোগ নেই!',
+                    'দয়া করে আপনার ইন্টারনেট কানেকশন চেক করুন এবং আবার চেষ্টা করুন।',
+                    '#ff6b6b',
+                    '📱 টেলিগ্রামে যোগ দিন: t.me/rslivetv'
+                );
+            }
+
+            // ব্যাকআপ চ্যানেল দেখান
+            setTimeout(function() {
+                renderChannels(BACKUP_CHANNELS, true);
+            }, 1500);
+
+            // লোডার হাইড
+            setTimeout(function() {
+                hideLoader();
+            }, 2000);
         }
     }
 
-    // ===== লোডার =====
-    setTimeout(function() {
-        var loader = document.getElementById('intro-loader');
-        if (loader && loader.style.display !== 'none') {
-            loader.style.opacity = '0';
-            loader.style.visibility = 'hidden';
-            setTimeout(function() { loader.style.display = 'none'; }, 500);
-        }
-    }, 3000);
+    // ============================================================
+    //  🚀 অ্যাপ স্টার্ট
+    // ============================================================
 
+    // JW Player রেডি হলে লোডার হাইড
+    function checkPlayerReady() {
+        try {
+            var player = window.jwPlayerInstance || jwplayer("direct-player");
+            if (player && player.getState) {
+                var state = player.getState();
+                if (state === 'playing' || state === 'buffering' || state === 'idle') {
+                    hideLoader();
+                }
+            }
+        } catch (e) {}
+    }
+
+    var checkInterval = setInterval(checkPlayerReady, 500);
+
+    setTimeout(function() {
+        clearInterval(checkInterval);
+        hideLoader();
+    }, 5000);
+
+    // ডেটা লোড
     loadAllData();
 
     console.log('✅ RS Live TV App Started!');

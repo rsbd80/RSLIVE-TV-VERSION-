@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Rs Live TV</title>
+<title>RS Live TV Player</title>
 
 <!-- JW Player Script -->
 <script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
@@ -12,81 +12,84 @@ jwplayer.key="Khpp2dHxlBJHC8MCmLnBuV2jK/DwDnJMniwF6EO9HC/riJ712ZmbHg==";
 </script>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-html,body{
-width:100%;
-height:100%;
-background:#000;
-overflow:hidden;
-font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+html, body {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-#player{
-width:100% !important;
-height:100% !important;
-position: absolute;
-top: 0;
-left: 0;
+#player-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
-/* নেটলিফাই প্লেয়ারের মতো ক্লিন ও মিনিমাল লোডার */
+#player {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* লোডার */
 #loader {
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:#000000;
-display:flex;
-justify-content:center;
-align-items:center;
-z-index:9999;
-flex-direction:column;
-transition: opacity 0.3s ease;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    flex-direction: column;
+    transition: opacity 0.4s ease;
 }
 
-/* ওই সাইটের মতো ম্যাটেরিয়াল/স্মুথ স্পিনার */
 .spinner {
-width: 50px;
-height: 50px;
-border: 3px solid rgba(255, 255, 255, 0.1);
-border-radius: 50%;
-border-top-color: #fff; 
-animation: spin 0.8s linear infinite;
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: #00f0ff;
+    animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-to { transform: rotate(360deg); }
+    to { transform: rotate(360deg); }
 }
 
 #loader p {
-margin-top: 15px;
-color: #eee;
-font-size: 15px;
-letter-spacing: 0.5px;
-font-weight: 400;
+    margin-top: 15px;
+    color: #eee;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    font-weight: 400;
 }
 
 .jwplayer {
-height:100% !important;
-width:100% !important;
+    height: 100% !important;
+    width: 100% !important;
 }
 
-/* ফিক্সড: জুম হবে না, ভিডিওর কোনো অংশ কাটবে না */
 .jw-video {
-object-fit: fill !important; /* fill দেওয়ার কারণে ভিডিও কাটা পড়বে না */
-width: 100vw !important;
-height: 100vh !important;
+    object-fit: fill !important;
+    width: 100vw !important;
+    height: 100vh !important;
 }
 
 :-webkit-full-screen {
-  width: 100% !important;
-  height: 100% !important;
+    width: 100% !important;
+    height: 100% !important;
 }
 </style>
 </head>
@@ -94,88 +97,126 @@ height: 100vh !important;
 <body>
 
 <div id="loader">
-<div class="spinner"></div>
-<p id="loader-text">Loading Stream...</p>
+    <div class="spinner"></div>
+    <p id="loader-text">Loading Stream...</p>
 </div>
 
-<div id="player"></div>
+<div id="player-container">
+    <div id="player"></div>
+</div>
 
 <script>
-function getStreamUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('url');
-}
+(function() {
+    'use strict';
 
-const streamUrl = getStreamUrl();
-const player = jwplayer("player");
-
-const defaultStream = "https://bestiptv.bestiptv-pro.workers.dev/?url=http://alvetv.com/moviebanglatv/8080/index.m3u8";
-const finalStream = streamUrl ? streamUrl : defaultStream;
-
-player.setup({
-playlist:[{
-title:"",
-sources:[
-{
-file: finalStream,
-type: "hls",
-label: "HD"
-}
-]
-}],
-width:"100%",
-height:"100%",
-aspectratio:"16:9",
-autostart:true,
-mute:false,
-primary:"html5",
-stretching:"fill", /* প্লেয়ার লেভেলেও স্ট্রেচিং fill রাখা হলো */
-controls:true
-});
-
-/* ফুলস্ক্রিন ইভেন্ট হ্যান্ডলার */
-player.on("fullscreen", function(event){
-    if(event.fullscreen) {
-        if (screen.orientation && screen.orientation.lock) {
-            screen.orientation.lock("landscape").catch(function(error) {
-                console.log("Orientation lock ignored: ", error);
-            });
+    function getStreamUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const url = urlParams.get('url');
+        if (url && url.startsWith('http')) {
+            return url;
         }
-        // ফুলস্ক্রিনেও অবজেক্ট ফিট 'fill' নিশ্চিত করা
-        setTimeout(() => {
-            const videoEl = document.querySelector('.jw-video');
-            if(videoEl) videoEl.style.setProperty('object-fit', 'fill', 'important');
-        }, 100);
+        return null;
     }
-});
 
-/* প্লেয়ার ইভেন্ট কন্ট্রোল */
-player.on("ready",function(){
-fadeAndHideLoader();
-});
+    const streamUrl = getStreamUrl();
+    const defaultStream = "https://bestiptv.bestiptv-pro.workers.dev/?url=http://alvetv.com/moviebanglatv/8080/index.m3u8";
+    const finalStream = streamUrl || defaultStream;
 
-player.on("error",function(){
-document.getElementById("loader").style.display="flex";
-document.getElementById("loader").style.opacity="1";
-document.getElementById("loader-text").innerHTML = "<span style='color:#ff4444;'>Stream Failed or Invalid URL</span>";
-});
+    const playerElement = document.getElementById('player');
+    const loader = document.getElementById('loader');
+    const loaderText = document.getElementById('loader-text');
 
-player.on("buffer",function(){
-document.getElementById("loader").style.display="flex";
-document.getElementById("loader").style.opacity="1";
-document.getElementById("loader-text").innerText = "Buffering...";
-});
+    const player = jwplayer("player");
 
-player.on("play",function(){
-fadeAndHideLoader();
-});
+    function hideLoader() {
+        loader.style.opacity = '0';
+        setTimeout(function() {
+            loader.style.display = 'none';
+        }, 400);
+    }
 
-function fadeAndHideLoader() {
-    document.getElementById("loader").style.opacity="0";
-    setTimeout(() => { 
-        document.getElementById("loader").style.display="none"; 
-    }, 300);
-}
+    player.setup({
+        playlist: [{
+            title: "Live Stream",
+            sources: [{
+                file: finalStream,
+                type: "hls",
+                label: "HD"
+            }]
+        }],
+        width: "100%",
+        height: "100%",
+        aspectratio: "16:9",
+        autostart: true,
+        mute: false,
+        primary: "html5",
+        stretching: "fill",
+        controls: true,
+        preload: "auto"
+    });
+
+    player.on("ready", function() {
+        hideLoader();
+    });
+
+    player.on("play", function() {
+        hideLoader();
+    });
+
+    player.on("buffer", function() {
+        loader.style.display = 'flex';
+        loader.style.opacity = '1';
+        loaderText.innerText = "Buffering...";
+    });
+
+    player.on("error", function(error) {
+        loader.style.display = 'flex';
+        loader.style.opacity = '1';
+        loaderText.innerHTML = '<span style="color:#ff4444;">⚠️ Stream Failed or Invalid URL</span>';
+        console.error("JW Player Error:", error);
+    });
+
+    player.on("fullscreen", function(event) {
+        if (event.fullscreen) {
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock("landscape").catch(function(err) {
+                    console.log("Orientation lock ignored:", err);
+                });
+            }
+            setTimeout(function() {
+                const videoEl = document.querySelector('.jw-video');
+                if (videoEl) {
+                    videoEl.style.setProperty('object-fit', 'fill', 'important');
+                }
+            }, 100);
+        }
+    });
+
+    setTimeout(function() {
+        if (loader.style.display !== 'none') {
+            hideLoader();
+        }
+    }, 5000);
+
+    let retryCount = 0;
+    const maxRetries = 3;
+
+    player.on("setupError", function() {
+        if (retryCount < maxRetries) {
+            retryCount++;
+            console.log(`Retrying... (${retryCount}/${maxRetries})`);
+            setTimeout(function() {
+                player.load({
+                    file: finalStream,
+                    type: "hls"
+                });
+            }, 2000 * retryCount);
+        }
+    });
+
+    console.log("JW Player Loaded with Stream:", finalStream);
+
+})();
 </script>
 
 </body>

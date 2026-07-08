@@ -1,40 +1,286 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
-    <title>Live TV App</title>
+<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+
+<!-- ==================== GOOGLE ANALYTICS ==================== -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DRBZH98TKH"></script>
+<script>
+window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments)}
+gtag('js',new Date());
+gtag('config','G-DRBZH98TKH');
+</script>
+
+<title>RS Live TV</title>
+<link rel="shortcut icon" type="x-icon" href="https://i.postimg.cc/mD1VCt2C/RS-Live.png">
+<link href="bootstrap.min.css" rel="stylesheet">
+<link href="style.css?v=12.0" rel="stylesheet">
+
+<!-- JW Player Script -->
+<script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
+<script>
+jwplayer.key="Khpp2dHxlBJHC8MCmLnBuV2jK/DwDnJMniwF6EO9HC/riJ712ZmbHg==";
+</script>
+
+<style>
+body{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;background-color:#06060c;overflow-x:hidden;scroll-behavior:auto!important;overscroll-behavior-y:contain}
+img,iframe,video,.embed-responsive-item{-webkit-user-drag:none;user-drag:none;pointer-events:auto}
+.tv-area{margin-top:0!important;padding-top:0!important}
+.tv-view{margin-bottom:5px!important}
+.tv-view .embed-responsive{border:1px solid #1f2029;border-radius:12px;background:#000;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.7)}
+#direct-player{border:1px solid #1f2029;border-radius:12px;background:#000;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.7);width:100%;min-height:400px}
+#intro-loader{position:fixed;inset:0;width:100%;height:100%;background:radial-gradient(circle at center,#0f0f16 0,#040406 100%);display:flex;align-items:center;justify-content:center;z-index:9999999;transition:opacity .5s ease,visibility .5s}
+.loader-content{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.welcome-text{font-size:14px;color:#888899;text-transform:uppercase;letter-spacing:4px;margin-bottom:5px;font-weight:600;animation:fadeInText 1s ease-out}
+.brand-text{font-size:32px;font-weight:900;color:#fff;letter-spacing:1px;margin:0;text-shadow:0 0 15px rgba(255,255,255,.1)}
+.brand-text span{color:#00f0ff;text-shadow:0 0 20px rgba(0,240,255,.6)}
+.loading-dots{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:15px}
+.loading-dots span{width:6px;height:6px;background-color:#ff0055;border-radius:50%;display:inline-block;box-shadow:0 0 8px #ff0055;animation:dotPulse 1.4s infinite ease-in-out both}
+.loading-dots span:nth-child(1){animation-delay:-.32s;background-color:#00f0ff;box-shadow:0 0 8px #00f0ff}
+.loading-dots span:nth-child(2){animation-delay:-.16s}
+.loading-dots span:nth-child(3){background-color:#00f0ff;box-shadow:0 0 8px #00f0ff}
+@keyframes fadeInText{0%{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes dotPulse{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+.top-bar-wrapper{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;margin:10px 0 12px;padding:14px;border-radius:18px;background:linear-gradient(135deg,rgba(15,16,28,.96) 0,rgba(8,10,20,.96) 55%,rgba(14,18,30,.96) 100%);border:1px solid rgba(0,240,255,.14);box-shadow:0 12px 35px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.04),0 0 30px rgba(0,240,255,.04);overflow:hidden;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-sizing:border-box}
+.top-bar-wrapper::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at left top,rgba(0,240,255,.14),transparent 32%),radial-gradient(circle at right bottom,rgba(255,0,85,.1),transparent 30%);pointer-events:none}
+.top-bar-wrapper::after{content:"";position:absolute;top:0;left:-140%;width:70%;height:100%;background:linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,.06) 45%,rgba(255,255,255,.12) 50%,rgba(255,255,255,.05) 55%,rgba(255,255,255,0) 100%);transform:skewX(-24deg);animation:headerShine 7s linear infinite;pointer-events:none}
+@keyframes headerShine{0%{left:-140%}100%{left:160%}}
+.logo-link{position:relative;z-index:2;text-decoration:none!important;display:flex;align-items:center;flex:1 1 auto;min-width:0}
+.brand-title-neon{display:flex;align-items:center;min-width:0;width:100%}
+.brand-stack{display:flex;flex-direction:column;line-height:1;min-width:0;flex:1 1 auto}
+.brand-line-main{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap}
+.brand-rs{font-size:26px;font-weight:1000;letter-spacing:.5px;background:linear-gradient(135deg,#fff 10%,#d5e4ff 45%,#8ad7ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 14px rgba(255,255,255,.08);position:relative}
+.brand-live{font-size:26px;font-weight:1000;letter-spacing:.8px;background:linear-gradient(90deg,#ff296d 0,#ff5e00 45%,#ffd000 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 16px rgba(255,41,109,.22),0 0 28px rgba(255,94,0,.12);position:relative}
+.brand-live::after{content:"";position:absolute;left:0;bottom:-4px;width:100%;height:2px;border-radius:20px;background:linear-gradient(90deg,#00f0ff,#ff2f76,#ffd000);box-shadow:0 0 12px rgba(0,240,255,.4);opacity:.9}
+.brand-line-sub{margin-top:8px;font-size:10px;color:#8ea1b7;letter-spacing:1.4px;text-transform:uppercase;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;flex-shrink:1}
+.channel-search-box-premium{position:relative;z-index:2;width:180px;flex-shrink:0}
+.channel-search-box-premium::before{content:"";position:absolute;inset:0;border-radius:15px;background:linear-gradient(135deg,rgba(0,240,255,.1),rgba(255,0,85,.08));pointer-events:none}
+.channel-search-box-premium input{position:relative;z-index:2;width:100%;height:44px;padding:0 44px 0 14px;border-radius:15px;border:1px solid rgba(0,240,255,.18);background:linear-gradient(180deg,rgba(18,20,32,.95),rgba(10,12,22,.95));color:#fff;font-size:13px;font-weight:700;outline:0;transition:.25s ease;box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 6px 20px rgba(0,0,0,.22);box-sizing:border-box}
+.channel-search-box-premium input::placeholder{color:#8da0b3;font-weight:600;letter-spacing:.2px}
+.channel-search-box-premium input:hover{border-color:rgba(0,240,255,.35)}
+.channel-search-box-premium input:focus{border-color:#00f0ff;background:linear-gradient(180deg,rgba(20,22,36,1),rgba(12,14,26,1));box-shadow:0 0 0 3px rgba(0,240,255,.1),0 0 20px rgba(0,240,255,.18),inset 0 1px 0 rgba(255,255,255,.05)}
+.search-icon-inside{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;display:block;pointer-events:none;z-index:3;opacity:.95;filter:drop-shadow(0 0 8px rgba(0,240,255,.35))}
+.channel-list{max-height:360px!important;overflow-y:auto!important;box-sizing:border-box;margin-bottom:0!important}
+@media(min-width:768px){.channel-list{max-height:480px!important}}
+.channel-list::-webkit-scrollbar{width:8px!important}
+.channel-list::-webkit-scrollbar-track{background:rgba(255,255,255,.03)!important;border-radius:10px}
+.channel-list::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#00f0ff 0,#0072ff 100%)!important;border-radius:10px;box-shadow:0 0 10px rgba(0,240,255,.8)!important;border:1px solid rgba(0,4,6,.5)}
+.channel-list::-webkit-scrollbar-thumb:hover{background:#ff0055!important;box-shadow:0 0 12px rgba(255,0,85,1)!important}
+.marquee-container{background:#0d0d13;color:#fff;padding:10px 0;display:flex;align-items:center;border-top:1px solid #1a1b26;border-bottom:1px solid #1a1b26;margin-top:10px;margin-bottom:15px;clear:both}
+.notice-label{background:linear-gradient(135deg,#ff0055,#ff5500);color:#fff;padding:3px 12px;margin-left:15px;border-radius:20px;font-weight:700;font-size:11px;flex-shrink:0;box-shadow:0 0 10px rgba(255,0,85,.4)}
+.marquee-container marquee{flex:1;padding:0 10px;font-size:13px;color:#ddd}
+.footer-premium{background:#040408;padding:5px 0 25px 0;text-align:center}
+.tio-style-banner-fixed{width:320px;height:50px;background:url(https://png.pngtree.com/background/20250208/original/pngtree-smooth-gradient-chaotic-texture-in-abstract-dark-background-with-black-shade-picture-image_15219959.jpg) center/cover;position:relative;overflow:hidden;border-radius:6px;border:1px solid #333;font-family:'Segoe UI',Roboto,sans-serif;display:flex;align-items:center;margin:0 auto 15px auto}
+.tio-style-banner-fixed::after{content:'';position:absolute;top:0;left:-150%;width:60%;height:100%;background:linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,.2) 50%,rgba(255,255,255,0) 100%);transform:skewX(-25deg);animation:smoke-smoke 4s infinite;z-index:3}
+@keyframes smoke-smoke{0%{left:-150%}40%{left:150%}100%{left:150%}}
+.banner-overlay{position:absolute;inset:0;width:100%;height:100%;background:linear-gradient(90deg,rgba(0,0,0,.85) 0,rgba(0,210,255,.1) 100%);z-index:1}
+.content-wrapper{position:relative;z-index:2;display:flex;align-items:center;width:100%;padding:0 10px;justify-content:space-between}
+.brand-logo-fixed{font-weight:900;font-size:13px;font-style:italic;white-space:nowrap;flex-shrink:0}
+.rs-live{color:#fff}
+.tv-text{color:#ff9100;text-shadow:0 0 5px #ff9100}
+.text-section-fixed{flex-grow:1;text-align:center;display:flex;flex-direction:column;gap:2px}
+.main-tags{display:flex;justify-content:center;gap:4px;font-size:7.5px;font-weight:800;text-transform:uppercase}
+.tag-cricket{color:#ffd700}
+.tag-football{color:#0f0}
+.tag-tv{color:#00d2ff}
+.sub-text{font-size:9px;color:#fff;margin:0;font-weight:700;text-shadow:1px 1px 2px #000}
+.live-circle{background:red;color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:12px;display:flex;align-items:center;gap:4px;flex-shrink:0}
+.pulse{width:5px;height:5px;background:#fff;border-radius:50%;animation:pulse-animation 1s infinite}
+@keyframes pulse-animation{0%{transform:scale(.95);opacity:1}100%{transform:scale(1.5);opacity:0}}
+.tg-card{background:#111116;padding:15px;border-radius:12px;border:1px solid #1a1b26;display:block;width:320px;margin:0 auto 15px auto}
+.telegram-btn{display:inline-block;background:#0088cc;color:#fff!important;padding:8px 25px;border-radius:6px;font-weight:700;text-decoration:none!important;margin-top:10px;font-size:13px;font-family:'Courier New',Courier,monospace;font-style:italic}
+.ad-box{margin:15px auto;width:320px;height:50px;display:none;justify-content:center;overflow:hidden}
+.copyright{color:#444;font-size:11px;margin-top:15px}
+@media(max-width:767px){.top-bar-wrapper{padding:12px 10px;border-radius:15px;gap:10px}.brand-rs,.brand-live{font-size:20px}.brand-line-sub{font-size:8.8px;letter-spacing:1px;margin-top:6px}.channel-search-box-premium{width:145px;flex-shrink:0}.channel-search-box-premium input{height:40px;font-size:12px;padding:0 40px 0 12px;border-radius:12px}.search-icon-inside{width:16px;height:16px;right:12px}}
+@media(min-width:768px){.top-bar-wrapper{padding:15px 16px}.brand-rs,.brand-live{font-size:28px}.brand-line-sub{font-size:11px}.channel-search-box-premium{width:230px}}
+@media(max-width:420px){.top-bar-wrapper{gap:8px;padding:10px 8px}.brand-rs,.brand-live{font-size:17px}.brand-line-sub{font-size:7.5px;letter-spacing:.8px;margin-top:5px}.channel-search-box-premium{width:120px;min-width:100px;flex-shrink:0}.channel-search-box-premium input{height:36px;font-size:11px;padding:0 34px 0 10px;border-radius:10px}.search-icon-inside{width:14px;height:14px;right:10px}}
+</style>
 </head>
 <body>
-    <!-- নোটিশ বার -->
-    <div class="notice-bar">
-        <marquee>সরাসরি খেলা দেখতে আমাদের টেলিগ্রাম গ্রুপে জয়েন করুন: <a href="https://t.me/yourgroup" target="_blank">Join Telegram</a></marquee>
+
+<!-- ==================== LOADER ==================== -->
+<div id="intro-loader">
+    <div class="loader-content">
+        <div class="welcome-text">Welcome To</div>
+        <h1 class="brand-text">RS Live <span>TV</span></h1>
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+    </div>
+</div>
+
+<!-- ==================== MAIN CONTENT ==================== -->
+<div class="container tv-area">
+    <div class="row">
+        <div class="col-xs-12 col-md-12">
+            <div class="top-bar-wrapper">
+                <a href="https://rslivetv.vercel.app/" class="logo-link">
+                    <div class="brand-title-neon">
+                        <div class="brand-stack">
+                            <div class="brand-line-main">
+                                <span class="brand-rs">RS</span>
+                                <span class="brand-live">LIVE TV</span>
+                            </div>
+                            <div class="brand-line-sub">Watch Live Sports • Movies • Entertainment</div>
+                        </div>
+                    </div>
+                </a>
+                <div class="channel-search-box-premium">
+                    <input type="text" id="channelSearch" placeholder="Search channels..." autocomplete="off">
+                    <svg class="search-icon-inside" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 22L20 20" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <header>
-        <h1>Live TV</h1>
-        <input type="text" id="searchBar" placeholder="চ্যানেল সার্চ করুন..." onkeyup="filterChannels()">
-    </header>
-
-    <div class="main-container">
-        <!-- সাইডবার (পিসির জন্য) -->
-        <aside class="sidebar" id="categoryMenu">
-            <button onclick="filterByCategory('All')">সব চ্যানেল</button>
-            <button onclick="filterByCategory('Sports')">স্পোর্টস</button>
-            <button onclick="filterByCategory('News')">নিউজ</button>
-        </aside>
-
-        <!-- ভিডিও এবং চ্যানেল লিস্ট -->
-        <main>
-            <div id="videoPlayer"> ভিডিও এখানে লোড হবে </div>
-            <div id="channelGrid" class="grid"></div>
-        </main>
+    <div class="row">
+        <div class="col-xs-12 col-md-10 tv-view">
+            <!-- সরাসরি JW Player (iFrame ছাড়া) -->
+            <div id="direct-player"></div>
+        </div>
+        <div class="col-xs-12 col-md-2 channel-list" id="scroll-wrapper">
+            <ul class="thumbnail-slider" id="channel-container"></ul>
+        </div>
     </div>
+</div>
 
-    <footer>
-        <p>যোগাযোগ: <a href="https://t.me/yourgroup">Telegram Group</a></p>
-    </footer>
+<!-- ==================== NOTICE BAR ==================== -->
+<div class="marquee-container">
+    <div class="notice-label">NOTICE</div>
+    <marquee scrollamount="6" onmouseover="this.stop()" onmouseout="this.start()" id="noticeBar"></marquee>
+</div>
 
-    <script src="script.js"></script>
-</body>
-</html>
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer-premium">
+    <div class="container">
+
+        <div class="tio-style-banner-fixed">
+            <div class="banner-overlay"></div>
+            <div class="content-wrapper">
+                <div class="brand-logo-fixed">
+                    <span class="rs-live">RS Live</span>
+                    <span class="tv-text">TV</span>
+                </div>
+                <div class="text-section-fixed">
+                    <div class="main-tags">
+                        <span class="tag-cricket">CRICKET 🏏</span>
+                        <span class="tag-football">FOOTBALL ⚽</span>
+                        <span class="tag-tv">TV SHOWS 📺</span>
+                    </div>
+                    <p class="sub-text">সব পাবেন একদম ফ্রিতে!</p>
+                </div>
+                <div class="live-circle">
+                    <span class="pulse"></span>LIVE
+                </div>
+            </div>
+        </div>
+
+        <div class="tg-card">
+            <h5 style="color:#fff;margin-bottom:5px;font-size:16px;">সাপোর্ট প্রয়োজন?</h5>
+            <p style="color:#777;font-size:11px;margin-bottom:5px;">আপডেট ও চ্যানেল রিকোয়েস্টের জন্য আমাদের টেলিগ্রাম গ্রুপে যোগ দিন।</p>
+            <a href="https://t.me/rslivetv" target="_blank" class="telegram-btn" id="telegramBtn">JOIN TELEGRAM</a>
+        </div>
+
+        <script>
+        atOptions = {
+            'key' : '774c0e371455f6476668178b5faae5ab',
+            'format' : 'iframe',
+            'height' : 50,
+            'width' : 320,
+            'params' : {}
+        };
+        </script>
+        <script src="https://www.highperformanceformat.com/774c0e371455f6476668178b5faae5ab/invoke.js"></script>
+        <div class="ad-box"></div>
+
+        <div class="copyright">© 2026 RS LIVE TV | All Rights Reserved</div>
+    </div>
+</footer>
+
+<!-- ==================== JW Player সেটআপ (সরাসরি) ==================== -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var player = jwplayer("direct-player");
+    player.setup({
+        playlist: [{
+            sources: [{
+                file: "https://bestiptv.bestiptv-pro.workers.dev/?url=http://alvetv.com/moviebanglatv/8080/index.m3u8",
+                type: "hls"
+            }]
+        }],
+        width: "100%",
+        height: "100%",
+        aspectratio: "16:9",
+        autostart: true,
+        stretching: "fill",
+        controls: true,
+        primary: "html5"
+    });
+
+    // প্লেয়ার রেডি হলে লোডার হাইড
+    player.on("ready", function() {
+        var loader = document.getElementById('intro-loader');
+        if (loader) {
+            loader.style.opacity = '0';
+            loader.style.visibility = 'hidden';
+            setTimeout(function() { loader.remove(); }, 500);
+        }
+    });
+
+    // প্লে হলে লোডার হাইড
+    player.on("play", function() {
+        var loader = document.getElementById('intro-loader');
+        if (loader && loader.style.visibility !== 'hidden') {
+            loader.style.opacity = '0';
+            loader.style.visibility = 'hidden';
+            setTimeout(function() { loader.remove(); }, 500);
+        }
+    });
+});
+</script>
+
+<!-- ==================== SECURITY SCRIPT ==================== -->
+<script>
+!function(){"use strict";
+if(window.location.protocol==="view-source:"){window.location.href="https://rslivetv.vercel.app/"}
+console.clear();
+console.log=function(){};
+console.warn=function(){};
+console.error=function(){};
+console.info=function(){};
+function debuggerCheck(){var start=performance.now();debugger;var end=performance.now();if(end-start>100){window.location.href="about:blank"}}
+setInterval(debuggerCheck,1e3);
+document.addEventListener('keydown',function(e){var key=e.keyCode||e.which;
+if(key===123||(e.ctrlKey&&e.shiftKey&&(key===73||key===74))||(e.ctrlKey&&key===85)||(e.ctrlKey&&key===83)||(e.ctrlKey&&key===80)||(e.ctrlKey&&key===67)||(e.ctrlKey&&key===86)||(e.ctrlKey&&key===88)||key===44){e.preventDefault();e.stopPropagation();return false}});
+document.addEventListener('contextmenu',function(e){e.preventDefault();return false});
+document.addEventListener('copy',function(e){e.preventDefault();return false});
+document.addEventListener('cut',function(e){e.preventDefault();return false});
+document.addEventListener('paste',function(e){e.preventDefault();return false});
+document.addEventListener('dragstart',function(e){e.preventDefault();return false});
+document.addEventListener('selectstart',function(e){e.preventDefault();return false});
+document.addEventListener('touchstart',function(e){if(e.touches.length>1){e.preventDefault();return false}},{passive:false});
+document.addEventListener('touchmove',function(e){if(e.touches.length>1){e.preventDefault();return false}},{passive:false});
+document.querySelectorAll('img, iframe, video').forEach(function(el){el.setAttribute('draggable','false');el.addEventListener('dragstart',function(e){e.preventDefault();return false});el.addEventListener('contextmenu',function(e){e.preventDefault();return false})});
+}();
+</script>
+
+<!-- ==================== KEYBOARD NAVIGATION ==================== -->
+<script>
+document.addEventListener('keydown',function(event){
+const items=Array.from(document.querySelectorAll('#channel-container li')).filter(el=>el.style.display!=='none');
+const active=document.activeElement;
+const searchInput=document.getElementById('channelSearch');
+if(active===searchInput){
+if(event.keyCode===13||event.key==="Enter"){event.preventDefault();event.stopPropagation();if(items.length>0){items[0].click()}searchInput.blur();return false}
+if(event.keyCode===40||event.key==="ArrowDown"){event.preventDefault();if(items.length>0)items[0].focus()}return}
+if(items.length===0)return;
+let index=items.indexOf(active);
+if(event.keyCode===40||event.key==="ArrowDown"){event.preventDefault();let nextIndex=index+1;if(nextIndex<items.length)items[nextIndex].focus()}
+else if(event.keyCode===38||event.key==="ArrowUp"){event.preventDefault();let prevIndex=index-1;if(prevIndex>=0){items[prevIndex].focus()}else if(prevIndex===-1&&searchInput){searchInput.focus()}}
+else if(event.keyCode===13||event.key==="Enter"){if(active&&active.tagName==='LI'){event.preventDefault();active.click()}}});
+function initTVFocus(){setTimeout(()=>{const firstChannel=document.querySelector('#channel-container li');const searchInput=document.getElementById('channelSearch');if(firstChannel&&document.activeElement!==searchInput){firstChannel.focus()}},600)}
+initTVFocus();
+</script>
+
+<!-- ==================== JSONBIN SCRIPT ==================== -->
+<script src="script.js"></script>
+</body></html>

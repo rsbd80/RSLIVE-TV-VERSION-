@@ -1,235 +1,282 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const container = document.getElementById('channel-container');
-    const searchInput = document.getElementById('channelSearch');
+@import url('https://fonts.googleapis.com/css?family=Rambla:400i');
 
-    // ============================================================
-    //  🔥 JSONBin.io ডেটা
-    // ============================================================
-    const JSONBIN_API_KEY = "$2a$10$yxEV5C5whOMmNwLqYCgz2.yjbkZGBdnX1qeT1GUIxO2l0R2V8E2Y6";
-    const CHANNELS_BIN_ID = "6a4bac5cda38895dfe3533ca";
-    const SETTINGS_BIN_ID = "6a4babc3f5f4af5e2966be9c";
+body {
+    background: #000;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
 
-    // ============================================================
-    //  📦 JSONBin.io থেকে ডেটা লোড
-    // ============================================================
-    async function fetchFromJSONBin(binId) {
-        const url = `https://api.jsonbin.io/v3/b/${binId}/latest`;
-        const response = await fetch(url, {
-            headers: {
-                'X-Master-Key': JSONBIN_API_KEY
-            }
-        });
+.tv-area {
+    margin-top: 50px;
+}
 
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status} - ${response.statusText}`);
-        }
+#direct-player {
+    width: 100%;
+    min-height: 400px;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+}
 
-        const data = await response.json();
-        return data.record;
+/* ===== চ্যানেল লিস্ট - ডেস্কটপ ===== */
+.channel-list {
+    padding-left: 0;
+    height: 540px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    display: block;
+}
+
+.thumbnail-slider {
+    margin: 0;
+    padding: 0 5px;
+    list-style: none;
+    display: block;
+    width: 100%;
+}
+
+.thumbnail-slider li {
+    list-style: none;
+    background: #1b1c21;
+    border: 2px solid #2d2e35;
+    border-radius: 8px;
+    padding: 0;
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none !important;
+    position: relative;
+    transition: all 0.15s ease-in-out;
+}
+
+.thumbnail-slider li img {
+    width: 100% !important;
+    height: 75px !important;
+    object-fit: contain !important;
+    display: block;
+    background: #ffffff !important;
+}
+
+.channel-info-box {
+    height: 32px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    background: #1f2026;
+    border-top: 1px solid #2d2e35;
+    box-sizing: border-box;
+}
+
+.channel-info-box .channel-title {
+    color: #aaaaaa;
+    font-size: 10px;
+    font-weight: 600;
+    margin: 0;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    line-height: 1.2;
+}
+
+.thumbnail-slider li:hover,
+.thumbnail-slider li:focus {
+    outline: none !important;
+    border: 2px solid #00f0ff !important;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+    background: #252731 !important;
+    transform: scale(1.02);
+    z-index: 10;
+}
+
+.thumbnail-slider li:focus .channel-info-box,
+.thumbnail-slider li:hover .channel-info-box {
+    background: #252731 !important;
+}
+
+.thumbnail-slider li:focus .channel-title,
+.thumbnail-slider li:hover .channel-title {
+    color: #ffffff !important;
+}
+
+.channel-list::-webkit-scrollbar {
+    width: 5px;
+    background-color: #0c0d11;
+}
+.channel-list::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: linear-gradient(180deg, #00f0ff 0, #0072ff 100%);
+}
+
+/* ===== মোবাইল রেসপনসিভ ===== */
+@media (max-width: 991px) {
+    .tv-area {
+        margin-top: 30px !important;
+        padding-top: 5px !important;
     }
 
-    // ============================================================
-    //  🚀 মেইন ফাংশন
-    // ============================================================
-    async function loadAllData() {
-        try {
-            const channels = await fetchFromJSONBin(CHANNELS_BIN_ID);
-            const settings = await fetchFromJSONBin(SETTINGS_BIN_ID);
-
-            // মেইনটেইন্যান্স চেক
-            if (settings.maintenance === "ON") {
-                document.body.innerHTML = `
-                    <div style="text-align:center; padding:100px 20px; color:white; background:#020617; min-height:100vh; font-family:sans-serif; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <h1 style="font-size:32px; margin-bottom:15px; color:#f87171;">🛠️ সিস্টেম আপডেট চলছে...</h1>
-                        <p style="font-size:16px; color:#94a3b8; max-width:500px; margin-bottom:25px;">সাময়িকভাবে আমাদের সার্ভার মেইনটেইন্যান্স করা হচ্ছে। খুব দ্রুতই আমরা লাইভে ফিরবো।</p>
-                        ${settings.telegram ? `<a href="${settings.telegram}" target="_blank" style="background:#10b981; color:#020617; text-decoration:none; font-weight:bold; padding:12px 24px; border-radius:10px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);">আমাদের টেলিগ্রাম গ্রুপে জয়েন করুন</a>` : ''}
-                    </div>
-                `;
-                return;
-            }
-
-            // নোটিশ বার আপডেট
-            const noticeBar = document.getElementById('noticeBar');
-            if (noticeBar && settings.notice) {
-                noticeBar.innerHTML = settings.notice;
-            }
-
-            // টেলিগ্রাম লিংক আপডেট
-            const telegramBtn = document.getElementById('telegramBtn');
-            if (telegramBtn && settings.telegram) {
-                telegramBtn.href = settings.telegram;
-            }
-
-            // চ্যানেল রেন্ডার
-            renderChannels(channels || []);
-
-        } catch (error) {
-            console.error('Error loading data:', error);
-            if (container) {
-                container.innerHTML = `
-                    <p style="color:#ff6b6b; text-align:center; padding:20px;">
-                        ⚠️ চ্যানেল লোড করতে সমস্যা হচ্ছে<br>
-                        <span style="font-size:12px; color:#888;">${error.message}</span><br>
-                        <span style="font-size:12px; color:#888;">দয়া করে একটু পরে আবার চেষ্টা করুন</span>
-                    </p>
-                `;
-            }
-        }
+    #direct-player {
+        min-height: 280px;
     }
 
-    // ============================================================
-    //  📺 চ্যানেল রেন্ডার
-    // ============================================================
-    function renderChannels(channels) {
-        if (!container) return;
-
-        const visibleChannels = channels.filter(ch => ch.hidden !== true);
-
-        if (!visibleChannels || visibleChannels.length === 0) {
-            container.innerHTML = '<p style="color:#aaa; text-align:center; padding:20px;">কোনো চ্যানেল পাওয়া যায়নি!</p>';
-            return;
-        }
-
-        container.innerHTML = '';
-
-        visibleChannels.forEach((channel, index) => {
-            const li = document.createElement('li');
-            li.setAttribute('tabindex', '0');
-            
-            const name = channel.name || `চ্যানেল ${index + 1}`;
-            const image = channel.image || 'https://i.postimg.cc/mD1VCt2C/RS-Live.png';
-            const url = channel.url || '#';
-
-            li.innerHTML = `
-                <div style="display: block; text-decoration: none; pointer-events: none; width: 100%;">
-                    <img src="${image}" alt="${name}" loading="lazy" onerror="this.src='https://i.postimg.cc/mD1VCt2C/RS-Live.png';">
-                    <div class="channel-info-box">
-                        <p class="channel-title">${name}</p>
-                    </div>
-                </div>
-            `;
-
-            // চ্যানেলে ক্লিক করলে সরাসরি JW Player-এ লোড হবে
-            li.addEventListener('click', function() {
-                // direct-player এ JW Player আপডেট
-                var player = jwplayer("direct-player");
-                if (player) {
-                    player.load({
-                        file: url,
-                        type: "hls"
-                    });
-                    player.play();
-                }
-
-                // সার্চ ক্লিয়ার
-                if (searchInput) {
-                    searchInput.value = '';
-                    const channelItems = container.querySelectorAll('li');
-                    channelItems.forEach(item => item.style.display = "");
-                }
-            });
-            
-            container.appendChild(li);
-        });
-
-        setupSearchFilter();
+    .channel-list {
+        padding: 8px 0;
+        height: auto !important;
+        max-height: 140px !important;
+        overflow-y: hidden !important;
+        overflow-x: auto !important;
+        display: block;
+        white-space: nowrap;
     }
 
-    // ============================================================
-    //  🔍 সার্চ ফিল্টার
-    // ============================================================
-    function setupSearchFilter() {
-        if (!searchInput) return;
-        
-        if (searchInput._listenerAdded) return;
-        searchInput._listenerAdded = true;
-
-        searchInput.addEventListener('input', function() {
-            const filterValue = this.value.toLowerCase().trim();
-            const channelItems = container.querySelectorAll('li');
-
-            channelItems.forEach(item => {
-                const channelTitle = item.querySelector('.channel-title');
-                if (channelTitle) {
-                    const text = channelTitle.textContent.toLowerCase();
-                    item.style.display = text.includes(filterValue) ? "" : "none";
-                }
-            });
-        });
+    .thumbnail-slider {
+        display: inline-flex !important;
+        flex-direction: row !important;
+        gap: 8px;
+        padding: 0 8px;
+        width: auto;
+        white-space: nowrap;
     }
 
-    // ============================================================
-    //  🚀 অ্যাপ স্টার্ট
-    // ============================================================
-    setTimeout(() => {
-        const loader = document.getElementById('intro-loader');
-        if (loader) {
-            loader.style.opacity = '0';
-            loader.style.visibility = 'hidden';
-            setTimeout(() => loader.remove(), 500);
-        }
-    }, 1500);
-
-    loadAllData();
-
-    // ============================================================
-    //  📺 টিভি ফোকাস
-    // ============================================================
-    function initTVFocus() {
-        setTimeout(() => {
-            const firstChannel = document.querySelector('#channel-container li');
-            const searchInput = document.getElementById('channelSearch');
-            if (firstChannel && document.activeElement !== searchInput) {
-                firstChannel.focus();
-            }
-        }, 600);
+    .thumbnail-slider li {
+        width: 110px !important;
+        min-width: 110px !important;
+        max-width: 110px !important;
+        flex-shrink: 0;
+        margin-bottom: 0;
+        border-radius: 6px;
+        display: inline-block !important;
     }
 
-    initTVFocus();
+    .thumbnail-slider li img {
+        height: 55px !important;
+        object-fit: contain !important;
+        background: #ffffff !important;
+    }
 
-    document.addEventListener('keydown', function(event) {
-        const items = Array.from(document.querySelectorAll('#channel-container li'))
-            .filter(el => el.style.display !== 'none');
-        const active = document.activeElement;
-        const searchInput = document.getElementById('channelSearch');
+    .channel-info-box {
+        height: 26px !important;
+        padding: 0 4px;
+    }
 
-        if (active === searchInput) {
-            if (event.keyCode === 13 || event.key === "Enter") {
-                event.preventDefault();
-                event.stopPropagation();
-                if (items.length > 0) {
-                    items[0].click();
-                }
-                searchInput.blur();
-                return false;
-            }
-            if (event.keyCode === 40 || event.key === "ArrowDown") {
-                event.preventDefault();
-                if (items.length > 0) items[0].focus();
-            }
-            return;
-        }
+    .channel-info-box .channel-title {
+        font-size: 8.5px;
+        white-space: nowrap;
+    }
+}
 
-        if (items.length === 0) return;
-        let index = items.indexOf(active);
+@media (max-width: 480px) {
+    .tv-area {
+        margin-top: 25px !important;
+    }
 
-        if (event.keyCode === 40 || event.key === "ArrowDown") {
-            event.preventDefault();
-            let nextIndex = index + 1;
-            if (nextIndex < items.length) items[nextIndex].focus();
-        } else if (event.keyCode === 38 || event.key === "ArrowUp") {
-            event.preventDefault();
-            let prevIndex = index - 1;
-            if (prevIndex >= 0) {
-                items[prevIndex].focus();
-            } else if (prevIndex === -1 && searchInput) {
-                searchInput.focus();
-            }
-        } else if (event.keyCode === 13 || event.key === "Enter") {
-            if (active && active.tagName === 'LI') {
-                event.preventDefault();
-                active.click();
-            }
-        }
-    });
-});
+    #direct-player {
+        min-height: 200px;
+        border-radius: 8px;
+    }
+
+    .channel-list {
+        max-height: 110px !important;
+        padding: 6px 0;
+    }
+
+    .thumbnail-slider {
+        gap: 6px;
+        padding: 0 6px;
+    }
+
+    .thumbnail-slider li {
+        width: 85px !important;
+        min-width: 85px !important;
+        max-width: 85px !important;
+        border-radius: 4px;
+        border-width: 1.5px;
+    }
+
+    .thumbnail-slider li img {
+        height: 42px !important;
+    }
+
+    .channel-info-box {
+        height: 22px !important;
+        padding: 0 3px;
+    }
+
+    .channel-info-box .channel-title {
+        font-size: 7.5px;
+        font-weight: 600;
+    }
+}
+
+@media (max-width: 420px) {
+    .channel-list {
+        max-height: 100px !important;
+        padding: 4px 0;
+    }
+
+    .thumbnail-slider {
+        gap: 5px;
+        padding: 0 4px;
+    }
+
+    .thumbnail-slider li {
+        width: 75px !important;
+        min-width: 75px !important;
+        max-width: 75px !important;
+        border-radius: 4px;
+    }
+
+    .thumbnail-slider li img {
+        height: 38px !important;
+    }
+
+    .channel-info-box {
+        height: 20px !important;
+        padding: 0 2px;
+    }
+
+    .channel-info-box .channel-title {
+        font-size: 6.5px;
+        font-weight: 600;
+    }
+}
+
+/* ===== ডেস্কটপ ===== */
+@media (min-width: 992px) {
+    .channel-list {
+        height: 540px;
+    }
+    .thumbnail-slider li img {
+        height: 75px;
+    }
+    .channel-info-box {
+        height: 32px;
+    }
+    .channel-info-box .channel-title {
+        font-size: 10px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .channel-list {
+        height: 580px;
+    }
+    .thumbnail-slider li img {
+        height: 80px;
+    }
+    .channel-info-box {
+        height: 34px;
+    }
+    .channel-info-box .channel-title {
+        font-size: 11px;
+    }
+}
